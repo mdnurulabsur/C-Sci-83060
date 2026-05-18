@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Global Rise of Art Biennales</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500&display=swap');
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background:#07080f;
+  font-family:'Inter',sans-serif;
+  color:#e0d8cc;
+  width:1400px;
+  margin:0 auto;
+  padding:80px 100px;
+}
+
+/* HEADER */
+.eyebrow { font-size:15px; letter-spacing:5px; text-transform:uppercase; color:#c8a060; margin-bottom:28px; }
+.title-line1 { font-family:'Playfair Display',serif; font-size:100px; font-weight:900; color:#ede8df; line-height:1.0; }
+.title-line2 { font-family:'Playfair Display',serif; font-size:100px; font-weight:900; color:#c8a060; line-height:1.1; margin-bottom:24px; }
+.subtitle { font-size:24px; color:#605850; font-weight:300; margin-bottom:52px; }
+hr.divider { border:none; border-top:1.5px solid #c8a06040; margin-bottom:52px; }
+
+/* STATS ROW */
+.stats-intro { display:grid; grid-template-columns:160px 160px 2px 1fr; gap:0 52px; align-items:start; margin-bottom:70px; }
+.stat-num { font-family:'Playfair Display',serif; font-size:80px; font-weight:700; color:#c8a060; line-height:1; display:block; }
+.stat-lbl { font-size:14px; text-transform:uppercase; letter-spacing:3px; color:#504840; margin-top:10px; display:block; line-height:1.5; }
+.vsep { background:#c8a06028; }
+.intro-p { font-size:21px; line-height:1.9; color:#a09888; font-weight:300; padding-top:6px; }
+
+/* SECTION HEADER */
+.sec-label { font-size:14px; letter-spacing:4px; text-transform:uppercase; color:#c8a060; font-weight:500; margin-bottom:16px; }
+.sec-title { font-family:'Playfair Display',serif; font-size:42px; font-weight:700; color:#ede8df; margin-bottom:14px; line-height:1.2; }
+.sec-desc { font-size:18px; color:#605850; font-weight:300; line-height:1.75; margin-bottom:32px; max-width:1100px; }
+
+/* MAP */
+.map-box { background:#0d1018; border:1px solid #c8a06020; border-radius:6px; padding:24px; margin-bottom:20px; }
+#mapCanvas { display:block; width:100%; height:auto; }
+
+/* LEGEND */
+.legend { display:flex; gap:32px; flex-wrap:wrap; margin-bottom:72px; }
+.leg-item { display:flex; align-items:center; gap:12px; }
+.leg-dot { width:18px; height:18px; border-radius:50%; flex-shrink:0; }
+.leg-lbl { font-size:16px; color:#807870; }
+
+/* CHARTS — each in its own full-width row */
+.chart-block { background:#0d1018; border:1px solid #c8a06020; border-radius:6px; padding:48px 52px 44px; margin-bottom:40px; }
+.chart-title { font-family:'Playfair Display',serif; font-size:34px; font-weight:700; color:#ede8df; margin-bottom:12px; }
+.chart-desc { font-size:17px; color:#605850; font-weight:300; line-height:1.75; margin-bottom:36px; max-width:900px; }
+canvas.chart { display:block; width:100%; }
+
+/* FOOTER */
+.footer { border-top:1px solid #c8a06018; padding-top:32px; display:flex; justify-content:space-between; gap:60px; margin-top:20px; }
+.footer-note { font-size:14px; color:#383028; line-height:1.8; }
+.footer-credit { font-size:14px; color:#c8a06040; text-align:right; white-space:nowrap; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="eyebrow">Data Visualization &nbsp;·&nbsp; Art World Geography &nbsp;·&nbsp; 1895–2018</div>
+<div class="title-line1">The Global Rise of</div>
+<div class="title-line2">Art Biennales</div>
+<div class="subtitle">How a Venetian invention conquered the world's art geography</div>
+<hr class="divider">
+
+<!-- STATS + INTRO -->
+<div class="stats-intro">
+  <div>
+    <span class="stat-num">200</span>
+    <span class="stat-lbl">Active<br>Biennales</span>
+  </div>
+  <div>
+    <span class="stat-num">81</span>
+    <span class="stat-lbl">Cities<br>Worldwide</span>
+  </div>
+  <div class="vsep"></div>
+  <p class="intro-p">The art biennale began as a single exhibition in Venice in 1895. For nearly a century it grew slowly — only 36 biennales existed worldwide by 1990. Then everything changed. Driven by globalization and a rapidly expanding art world, the number exploded. In the 1990s alone the total nearly tripled, growing by 197%. By 2018, 200 active biennales were spread across 81 cities on every inhabited continent. The map below plots each one, colored by the era in which it was founded.</p>
+</div>
+
+<!-- MAP -->
+<div class="sec-label">01 — Main Visualization &nbsp;·&nbsp; World Map</div>
+<div class="sec-title">Where Biennales Were Born: A Geography of Founding Eras</div>
+<div class="sec-desc">Each dot = one biennale at its founding city. Color shows the founding era. Notice how the early decades were almost entirely European, while Asia and the Global South surge strongly after 2000.</div>
+<div class="map-box">
+  <canvas id="mapCanvas" width="1160" height="560"></canvas>
+</div>
+<div class="legend" id="legend"></div>
+
+<!-- CHART 1 -->
+<div class="sec-label">02 — Supporting Visualization A</div>
+<div class="chart-block">
+  <div class="chart-title">Exponential Growth, 1895–2018</div>
+  <div class="chart-desc">Total number of active biennales in existence each year. The curve is nearly flat for 90 years, then turns sharply upward after 1990. The 2008 financial crisis caused a brief pause — 2011 saw just one new biennale founded — but growth resumed quickly and reached 200 by 2018.</div>
+  <canvas class="chart" id="growthChart" width="1060" height="380"></canvas>
+</div>
+
+<!-- CHART 2 -->
+<div class="sec-label">02 — Supporting Visualization B</div>
+<div class="chart-block">
+  <div class="chart-title">Biennales by World Region, 2018</div>
+  <div class="chart-desc">Western Europe leads with 57 biennales, but Asia's rise to second place with 41 is the defining story of the past two decades. The geography of biennales does not match the art market — Moscow, Riga, and Taipei each host more biennales than most global art capitals.</div>
+  <canvas class="chart" id="regionChart" width="1060" height="380"></canvas>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <p class="footer-note">Dataset: 200 art biennales active in 2017–2018, compiled by Alise Tifentalle (Fall 2018). Analysis: Lev Manovich, "Examining the Growth of Art Biennales from 1895 to 2019," Cultural Analytics Lab, 2021. Three biennales with missing geographic coordinates are omitted from the map.</p>
+  <div class="footer-credit">C-Sci-83060<br>Data Visualization</div>
+</div>
+
+<script>
+const MAP_DATA = [{"City":"Venice","Country":"Italy","CleanRegion":"Western Europe","First_edition_year":1895,"latitude":45.44,"longitude":12.31},{"City":"Pittsburgh","Country":"USA","CleanRegion":"North America","First_edition_year":1896,"latitude":40.44,"longitude":-79.99},{"City":"Tucson","Country":"USA","CleanRegion":"North America","First_edition_year":1948,"latitude":32.22,"longitude":-110.97},{"City":"Arnhem","Country":"Netherlands","CleanRegion":"Western Europe","First_edition_year":1949,"latitude":51.98,"longitude":5.89},{"City":"São Paulo","Country":"Brazil","CleanRegion":"Latin America","First_edition_year":1951,"latitude":-23.55,"longitude":-46.63},{"City":"Ljubljana","Country":"Slovenia","CleanRegion":"Eastern Europe","First_edition_year":1955,"latitude":46.05,"longitude":14.50},{"City":"Kassel","Country":"Germany","CleanRegion":"Western Europe","First_edition_year":1955,"latitude":51.31,"longitude":9.47},{"City":"Belgrade","Country":"Serbia","CleanRegion":"Eastern Europe","First_edition_year":1960,"latitude":44.81,"longitude":20.46},{"City":"Helsinki","Country":"Finland","CleanRegion":"Western Europe","First_edition_year":1961,"latitude":60.16,"longitude":24.93},{"City":"Brno","Country":"Czech Republic","CleanRegion":"Eastern Europe","First_edition_year":1963,"latitude":49.19,"longitude":16.60},{"City":"Krakow","Country":"Poland","CleanRegion":"Eastern Europe","First_edition_year":1966,"latitude":50.06,"longitude":19.94},{"City":"Tallinn","Country":"Estonia","CleanRegion":"Eastern Europe","First_edition_year":1968,"latitude":59.43,"longitude":24.75},{"City":"Riga","Country":"Latvia","CleanRegion":"Eastern Europe","First_edition_year":1972,"latitude":56.94,"longitude":24.10},{"City":"New York","Country":"USA","CleanRegion":"North America","First_edition_year":1973,"latitude":40.71,"longitude":-74.00},{"City":"Sydney","Country":"Australia","CleanRegion":"Oceania","First_edition_year":1973,"latitude":-33.86,"longitude":151.20},{"City":"Jakarta","Country":"Indonesia","CleanRegion":"Asia","First_edition_year":1974,"latitude":-6.20,"longitude":106.84},{"City":"Münster","Country":"Germany","CleanRegion":"Western Europe","First_edition_year":1977,"latitude":51.96,"longitude":7.62},{"City":"Limerick","Country":"Ireland","CleanRegion":"Western Europe","First_edition_year":1977,"latitude":52.66,"longitude":-8.62},{"City":"Guatemala City","Country":"Guatemala","CleanRegion":"Latin America","First_edition_year":1978,"latitude":14.63,"longitude":-90.50},{"City":"Vila Nova de Cerveira","Country":"Portugal","CleanRegion":"Western Europe","First_edition_year":1978,"latitude":41.94,"longitude":-8.74},{"City":"Vilnius","Country":"Lithuania","CleanRegion":"Eastern Europe","First_edition_year":1979,"latitude":54.68,"longitude":25.28},{"City":"São Paulo","Country":"Brazil","CleanRegion":"Latin America","First_edition_year":1983,"latitude":-23.60,"longitude":-46.70},{"City":"Houston","Country":"USA","CleanRegion":"North America","First_edition_year":1983,"latitude":29.76,"longitude":-95.36},{"City":"Tirana","Country":"Albania","CleanRegion":"Western Europe","First_edition_year":1984,"latitude":41.32,"longitude":19.81},{"City":"Bonn","Country":"Germany","CleanRegion":"Western Europe","First_edition_year":1984,"latitude":50.73,"longitude":7.09},{"City":"Rauma","Country":"Finland","CleanRegion":"Western Europe","First_edition_year":1985,"latitude":61.13,"longitude":21.50},{"City":"Geneva","Country":"Switzerland","CleanRegion":"Western Europe","First_edition_year":1985,"latitude":46.20,"longitude":6.14},{"City":"Varna","Country":"Bulgaria","CleanRegion":"Eastern Europe","First_edition_year":1987,"latitude":43.21,"longitude":27.91},{"City":"Skopje","Country":"Macedonia","CleanRegion":"Eastern Europe","First_edition_year":1987,"latitude":41.99,"longitude":21.42},{"City":"Istanbul","Country":"Turkey","CleanRegion":"Middle East","First_edition_year":1987,"latitude":41.00,"longitude":28.97},{"City":"Yogyakarta","Country":"Indonesia","CleanRegion":"Asia","First_edition_year":1988,"latitude":-7.79,"longitude":110.36},{"City":"Resistencia","Country":"Argentina","CleanRegion":"Latin America","First_edition_year":1988,"latitude":-27.45,"longitude":-58.98},{"City":"Cuenca","Country":"Ecuador","CleanRegion":"Latin America","First_edition_year":1988,"latitude":-2.90,"longitude":-79.00},{"City":"Thessaloniki","Country":"Greece","CleanRegion":"Western Europe","First_edition_year":1989,"latitude":40.64,"longitude":22.94},{"City":"Wrocław","Country":"Poland","CleanRegion":"Eastern Europe","First_edition_year":1989,"latitude":51.10,"longitude":17.03},{"City":"Adelaide","Country":"Australia","CleanRegion":"Oceania","First_edition_year":1990,"latitude":-34.92,"longitude":138.60},{"City":"Lyon","Country":"France","CleanRegion":"Western Europe","First_edition_year":1991,"latitude":45.76,"longitude":4.83},{"City":"Dakar","Country":"Senegal","CleanRegion":"Africa","First_edition_year":1992,"latitude":14.71,"longitude":-17.46},{"City":"Taipei","Country":"Taiwan","CleanRegion":"Asia","First_edition_year":1992,"latitude":25.03,"longitude":121.56},{"City":"Monterrey","Country":"Mexico","CleanRegion":"Latin America","First_edition_year":1992,"latitude":25.68,"longitude":-100.31},{"City":"Santiago","Country":"Chile","CleanRegion":"Latin America","First_edition_year":1993,"latitude":-33.44,"longitude":-70.66},{"City":"Sharjah","Country":"UAE","CleanRegion":"Middle East","First_edition_year":1993,"latitude":25.34,"longitude":55.42},{"City":"Brisbane","Country":"Australia","CleanRegion":"Oceania","First_edition_year":1993,"latitude":-27.47,"longitude":153.02},{"City":"Curitiba","Country":"Brazil","CleanRegion":"Latin America","First_edition_year":1993,"latitude":-25.43,"longitude":-49.26},{"City":"Bamako","Country":"Mali","CleanRegion":"Africa","First_edition_year":1994,"latitude":12.63,"longitude":-8.00},{"City":"Moscow","Country":"Russia","CleanRegion":"Eastern Europe","First_edition_year":1994,"latitude":55.75,"longitude":37.61},{"City":"Bitola","Country":"Macedonia","CleanRegion":"Eastern Europe","First_edition_year":1994,"latitude":41.02,"longitude":21.32},{"City":"Gwangju","Country":"South Korea","CleanRegion":"Asia","First_edition_year":1995,"latitude":35.15,"longitude":126.85},{"City":"Krasnoyarsk","Country":"Russia","CleanRegion":"Eastern Europe","First_edition_year":1995,"latitude":56.01,"longitude":92.89},{"City":"Santa Fe","Country":"USA","CleanRegion":"North America","First_edition_year":1995,"latitude":35.68,"longitude":-105.93},{"City":"Palermo","Country":"Italy","CleanRegion":"Western Europe","First_edition_year":1995,"latitude":38.11,"longitude":13.36},{"City":"Shanghai","Country":"China","CleanRegion":"Asia","First_edition_year":1996,"latitude":31.23,"longitude":121.47},{"City":"Alberta","Country":"Canada","CleanRegion":"North America","First_edition_year":1996,"latitude":53.93,"longitude":-116.57},{"City":"Kaunas","Country":"Lithuania","CleanRegion":"Eastern Europe","First_edition_year":1997,"latitude":54.89,"longitude":23.90},{"City":"Porto Alegre","Country":"Brazil","CleanRegion":"Latin America","First_edition_year":1997,"latitude":-30.03,"longitude":-51.20},{"City":"Liège","Country":"Belgium","CleanRegion":"Western Europe","First_edition_year":1997,"latitude":50.63,"longitude":5.56},{"City":"Cologne","Country":"Germany","CleanRegion":"Western Europe","First_edition_year":1997,"latitude":50.93,"longitude":6.96},{"City":"Florence","Country":"Italy","CleanRegion":"Western Europe","First_edition_year":1997,"latitude":43.76,"longitude":11.25},{"City":"Busan","Country":"South Korea","CleanRegion":"Asia","First_edition_year":1998,"latitude":35.17,"longitude":129.07},{"City":"San José","Country":"Costa Rica","CleanRegion":"Latin America","First_edition_year":1998,"latitude":9.93,"longitude":-84.09},{"City":"Berlin","Country":"Germany","CleanRegion":"Western Europe","First_edition_year":1998,"latitude":52.52,"longitude":13.40},{"City":"La Paz","Country":"Bolivia","CleanRegion":"Latin America","First_edition_year":1999,"latitude":-16.48,"longitude":-68.11},{"City":"Quebec","Country":"Canada","CleanRegion":"North America","First_edition_year":1999,"latitude":46.81,"longitude":-71.20},{"City":"Louisville","Country":"USA","CleanRegion":"North America","First_edition_year":1999,"latitude":38.25,"longitude":-85.75},{"City":"Dhaka","Country":"Bangladesh","CleanRegion":"Asia","First_edition_year":2000,"latitude":23.81,"longitude":90.41},{"City":"Echigo-Tsumari","Country":"Japan","CleanRegion":"Asia","First_edition_year":2000,"latitude":37.10,"longitude":138.50},{"City":"Seoul","Country":"South Korea","CleanRegion":"Asia","First_edition_year":2000,"latitude":37.56,"longitude":126.97},{"City":"Christchurch","Country":"New Zealand","CleanRegion":"Oceania","First_edition_year":2000,"latitude":-43.53,"longitude":172.63},{"City":"Yokohama","Country":"Japan","CleanRegion":"Asia","First_edition_year":2001,"latitude":35.44,"longitude":139.63},{"City":"Göteborg","Country":"Sweden","CleanRegion":"Western Europe","First_edition_year":2001,"latitude":57.70,"longitude":11.97},{"City":"Guangzhou","Country":"China","CleanRegion":"Asia","First_edition_year":2002,"latitude":23.12,"longitude":113.26},{"City":"Herning","Country":"Denmark","CleanRegion":"Western Europe","First_edition_year":2002,"latitude":56.13,"longitude":8.96},{"City":"Wrocław","Country":"Poland","CleanRegion":"Eastern Europe","First_edition_year":2003,"latitude":51.10,"longitude":17.05},{"City":"Melbourne","Country":"Australia","CleanRegion":"Oceania","First_edition_year":2003,"latitude":-37.81,"longitude":144.96},{"City":"Mechelen","Country":"Belgium","CleanRegion":"Western Europe","First_edition_year":2003,"latitude":51.02,"longitude":4.47},{"City":"Turku","Country":"Finland","CleanRegion":"Western Europe","First_edition_year":2003,"latitude":60.45,"longitude":22.26},{"City":"Brighton","Country":"UK","CleanRegion":"Western Europe","First_edition_year":2003,"latitude":50.82,"longitude":-0.13},{"City":"Bucharest","Country":"Romania","CleanRegion":"Eastern Europe","First_edition_year":2004,"latitude":44.42,"longitude":26.10},{"City":"Liverpool","Country":"UK","CleanRegion":"Western Europe","First_edition_year":2004,"latitude":53.41,"longitude":-2.97},{"City":"Beijing","Country":"China","CleanRegion":"Asia","First_edition_year":2005,"latitude":39.90,"longitude":116.40},{"City":"Shenzhen","Country":"China","CleanRegion":"Asia","First_edition_year":2005,"latitude":22.54,"longitude":114.05},{"City":"Vancouver","Country":"Canada","CleanRegion":"North America","First_edition_year":2005,"latitude":49.28,"longitude":-123.12},{"City":"New York","Country":"USA","CleanRegion":"North America","First_edition_year":2005,"latitude":40.65,"longitude":-73.95},{"City":"Ballarat","Country":"Australia","CleanRegion":"Oceania","First_edition_year":2005,"latitude":-37.56,"longitude":143.85},{"City":"Mannheim","Country":"Germany","CleanRegion":"Western Europe","First_edition_year":2005,"latitude":49.48,"longitude":8.46},{"City":"Athens","Country":"Greece","CleanRegion":"Western Europe","First_edition_year":2005,"latitude":37.98,"longitude":23.72},{"City":"Glasgow","Country":"UK","CleanRegion":"Western Europe","First_edition_year":2005,"latitude":55.86,"longitude":-4.25},{"City":"Ulaanbaatar","Country":"Mongolia","CleanRegion":"Asia","First_edition_year":2006,"latitude":47.88,"longitude":106.90},{"City":"Singapore","Country":"Singapore","CleanRegion":"Asia","First_edition_year":2006,"latitude":1.35,"longitude":103.81},{"City":"Daegu","Country":"South Korea","CleanRegion":"Asia","First_edition_year":2006,"latitude":35.87,"longitude":128.60},{"City":"Sinop","Country":"Turkey","CleanRegion":"Middle East","First_edition_year":2006,"latitude":42.02,"longitude":35.15},{"City":"Reykjavik","Country":"Iceland","CleanRegion":"Western Europe","First_edition_year":2006,"latitude":64.14,"longitude":-21.94},{"City":"Whitstable","Country":"UK","CleanRegion":"Western Europe","First_edition_year":2006,"latitude":51.36,"longitude":1.02},{"City":"Douala","Country":"Cameroon","CleanRegion":"Africa","First_edition_year":2007,"latitude":4.05,"longitude":9.76},{"City":"Taipei","Country":"Taiwan","CleanRegion":"Asia","First_edition_year":2007,"latitude":25.10,"longitude":121.60},{"City":"Athens","Country":"Greece","CleanRegion":"Western Europe","First_edition_year":2007,"latitude":37.92,"longitude":23.83},{"City":"Lubumbashi","Country":"Congo","CleanRegion":"Africa","First_edition_year":2008,"latitude":-11.68,"longitude":27.50},{"City":"Taipei","Country":"Taiwan","CleanRegion":"Asia","First_edition_year":2008,"latitude":24.95,"longitude":121.48},{"City":"Poznan","Country":"Poland","CleanRegion":"Eastern Europe","First_edition_year":2008,"latitude":52.40,"longitude":16.92},{"City":"Moscow","Country":"Russia","CleanRegion":"Eastern Europe","First_edition_year":2008,"latitude":55.90,"longitude":37.50},{"City":"Çanakkale","Country":"Turkey","CleanRegion":"Middle East","First_edition_year":2008,"latitude":40.14,"longitude":26.40},{"City":"New Orleans","Country":"USA","CleanRegion":"North America","First_edition_year":2008,"latitude":29.95,"longitude":-90.07},{"City":"Rennes","Country":"France","CleanRegion":"Western Europe","First_edition_year":2008,"latitude":48.10,"longitude":-1.67},{"City":"Borås","Country":"Sweden","CleanRegion":"Western Europe","First_edition_year":2008,"latitude":57.72,"longitude":12.95},{"City":"El Paso","Country":"USA","CleanRegion":"North America","First_edition_year":2008,"latitude":31.76,"longitude":-106.48},{"City":"Kathmandu","Country":"Nepal","CleanRegion":"Asia","First_edition_year":2009,"latitude":27.70,"longitude":85.32},{"City":"Port-au-Prince","Country":"Haiti","CleanRegion":"Caribbean","First_edition_year":2009,"latitude":18.53,"longitude":-72.33},{"City":"Riga","Country":"Latvia","CleanRegion":"Eastern Europe","First_edition_year":2009,"latitude":57.00,"longitude":24.20},{"City":"La Paz","Country":"Bolivia","CleanRegion":"Latin America","First_edition_year":2009,"latitude":-16.60,"longitude":-68.20},{"City":"Chianciano","Country":"Italy","CleanRegion":"Western Europe","First_edition_year":2009,"latitude":43.04,"longitude":11.82},{"City":"Moss","Country":"Norway","CleanRegion":"Western Europe","First_edition_year":2009,"latitude":59.43,"longitude":10.67},{"City":"Aichi","Country":"Japan","CleanRegion":"Asia","First_edition_year":2010,"latitude":34.95,"longitude":137.25},{"City":"Seto Inland Sea","Country":"Japan","CleanRegion":"Asia","First_edition_year":2010,"latitude":34.40,"longitude":132.50},{"City":"Yekaterinburg","Country":"Russia","CleanRegion":"Eastern Europe","First_edition_year":2010,"latitude":56.83,"longitude":60.60},{"City":"Oran","Country":"Algeria","CleanRegion":"Africa","First_edition_year":2010,"latitude":35.69,"longitude":-0.62},{"City":"Mardin","Country":"Turkey","CleanRegion":"Middle East","First_edition_year":2010,"latitude":37.31,"longitude":40.72},{"City":"Barcelona","Country":"Spain","CleanRegion":"Western Europe","First_edition_year":2010,"latitude":41.40,"longitude":2.15},{"City":"Liverpool","Country":"UK","CleanRegion":"Western Europe","First_edition_year":2011,"latitude":53.42,"longitude":-2.93},{"City":"Casablanca","Country":"Morocco","CleanRegion":"Africa","First_edition_year":2012,"latitude":33.58,"longitude":-7.62},{"City":"Kochi","Country":"India","CleanRegion":"Asia","First_edition_year":2012,"latitude":10.03,"longitude":76.31},{"City":"Changwon","Country":"South Korea","CleanRegion":"Asia","First_edition_year":2012,"latitude":35.22,"longitude":128.68},{"City":"Ramallah","Country":"Palestine","CleanRegion":"Middle East","First_edition_year":2012,"latitude":31.91,"longitude":35.16},{"City":"Montreal","Country":"Canada","CleanRegion":"North America","First_edition_year":2012,"latitude":45.56,"longitude":-73.60},{"City":"Cincinnati","Country":"USA","CleanRegion":"North America","First_edition_year":2012,"latitude":39.16,"longitude":-84.48},{"City":"Los Angeles","Country":"USA","CleanRegion":"North America","First_edition_year":2012,"latitude":34.05,"longitude":-118.24},{"City":"London","Country":"UK","CleanRegion":"Western Europe","First_edition_year":2012,"latitude":51.51,"longitude":-0.11},{"City":"Pune","Country":"India","CleanRegion":"Asia","First_edition_year":2013,"latitude":18.51,"longitude":73.85},{"City":"Odessa","Country":"Ukraine","CleanRegion":"Eastern Europe","First_edition_year":2013,"latitude":46.44,"longitude":30.73},{"City":"Jerusalem","Country":"Israel","CleanRegion":"Middle East","First_edition_year":2013,"latitude":31.79,"longitude":35.20},{"City":"Orange County","Country":"USA","CleanRegion":"North America","First_edition_year":2013,"latitude":33.68,"longitude":-117.79},{"City":"Innsbruck","Country":"Austria","CleanRegion":"Western Europe","First_edition_year":2013,"latitude":47.27,"longitude":11.39},{"City":"Stavanger","Country":"Norway","CleanRegion":"Western Europe","First_edition_year":2013,"latitude":58.95,"longitude":5.71},{"City":"Kampala","Country":"Uganda","CleanRegion":"Africa","First_edition_year":2014,"latitude":0.32,"longitude":32.58},{"City":"Budapest","Country":"Hungary","CleanRegion":"Eastern Europe","First_edition_year":2014,"latitude":47.49,"longitude":19.04},{"City":"Sorocaba","Country":"Brazil","CleanRegion":"Latin America","First_edition_year":2014,"latitude":-23.50,"longitude":-47.45},{"City":"Halberstadt","Country":"Germany","CleanRegion":"Western Europe","First_edition_year":2014,"latitude":51.89,"longitude":11.04},{"City":"Timișoara","Country":"Romania","CleanRegion":"Eastern Europe","First_edition_year":2015,"latitude":45.74,"longitude":21.20},{"City":"Rio de Janeiro","Country":"Brazil","CleanRegion":"Latin America","First_edition_year":2015,"latitude":-22.90,"longitude":-43.17},{"City":"Kabul","Country":"Afghanistan","CleanRegion":"Middle East","First_edition_year":2015,"latitude":34.52,"longitude":69.17},{"City":"Vienna","Country":"Austria","CleanRegion":"Western Europe","First_edition_year":2015,"latitude":48.20,"longitude":16.37},{"City":"Bruges","Country":"Belgium","CleanRegion":"Western Europe","First_edition_year":2015,"latitude":51.20,"longitude":3.22},{"City":"Paris","Country":"France","CleanRegion":"Western Europe","First_edition_year":2015,"latitude":48.85,"longitude":2.35},{"City":"Yinchuan","Country":"China","CleanRegion":"Asia","First_edition_year":2016,"latitude":38.46,"longitude":106.27},{"City":"Okayama","Country":"Japan","CleanRegion":"Asia","First_edition_year":2016,"latitude":34.66,"longitude":133.93},{"City":"Riga","Country":"Latvia","CleanRegion":"Eastern Europe","First_edition_year":2016,"latitude":57.05,"longitude":24.10},{"City":"Buenos Aires","Country":"Argentina","CleanRegion":"Latin America","First_edition_year":2016,"latitude":-34.60,"longitude":-58.37},{"City":"Cairo","Country":"Egypt","CleanRegion":"Africa","First_edition_year":2016,"latitude":30.06,"longitude":31.28},{"City":"Lagos","Country":"Nigeria","CleanRegion":"Africa","First_edition_year":2017,"latitude":6.45,"longitude":3.39},{"City":"Yerevan","Country":"Armenia","CleanRegion":"Asia","First_edition_year":2017,"latitude":40.18,"longitude":44.51},{"City":"Chennai","Country":"India","CleanRegion":"Asia","First_edition_year":2017,"latitude":13.08,"longitude":80.27},{"City":"Suzu City","Country":"Japan","CleanRegion":"Asia","First_edition_year":2017,"latitude":37.43,"longitude":137.26},{"City":"Kuala Lumpur","Country":"Malaysia","CleanRegion":"Asia","First_edition_year":2017,"latitude":3.14,"longitude":101.68},{"City":"Karachi","Country":"Pakistan","CleanRegion":"Asia","First_edition_year":2017,"latitude":24.86,"longitude":67.01},{"City":"Jeju","Country":"South Korea","CleanRegion":"Asia","First_edition_year":2017,"latitude":33.48,"longitude":126.49},{"City":"Moscow","Country":"Russia","CleanRegion":"Eastern Europe","First_edition_year":2017,"latitude":55.65,"longitude":37.70},{"City":"Buenos Aires","Country":"Argentina","CleanRegion":"Latin America","First_edition_year":2017,"latitude":-34.70,"longitude":-58.50},{"City":"Newfoundland","Country":"Canada","CleanRegion":"North America","First_edition_year":2017,"latitude":53.13,"longitude":-57.66},{"City":"Coachella Valley","Country":"USA","CleanRegion":"North America","First_edition_year":2017,"latitude":33.74,"longitude":-116.37},{"City":"Honolulu","Country":"USA","CleanRegion":"North America","First_edition_year":2017,"latitude":21.30,"longitude":-157.85},{"City":"Melbourne","Country":"Australia","CleanRegion":"Oceania","First_edition_year":2017,"latitude":-37.70,"longitude":145.10},{"City":"Aarhus","Country":"Denmark","CleanRegion":"Western Europe","First_edition_year":2017,"latitude":56.16,"longitude":10.20},{"City":"Copenhagen","Country":"Denmark","CleanRegion":"Western Europe","First_edition_year":2017,"latitude":55.67,"longitude":12.56},{"City":"Anren","Country":"China","CleanRegion":"Asia","First_edition_year":2018,"latitude":30.57,"longitude":104.06},{"City":"Shenzhen","Country":"China","CleanRegion":"Asia","First_edition_year":2018,"latitude":22.40,"longitude":114.10},{"City":"Manila","Country":"Philippines","CleanRegion":"Asia","First_edition_year":2018,"latitude":14.59,"longitude":120.98},{"City":"Bangkok","Country":"Thailand","CleanRegion":"Asia","First_edition_year":2018,"latitude":13.75,"longitude":100.50},{"City":"Krabi","Country":"Thailand","CleanRegion":"Asia","First_edition_year":2018,"latitude":8.08,"longitude":98.90},{"City":"Riga","Country":"Latvia","CleanRegion":"Eastern Europe","First_edition_year":2018,"latitude":57.10,"longitude":24.00},{"City":"Rio de Janeiro","Country":"Brazil","CleanRegion":"Latin America","First_edition_year":2018,"latitude":-23.00,"longitude":-43.30},{"City":"Lahore","Country":"Pakistan","CleanRegion":"Middle East","First_edition_year":2018,"latitude":31.52,"longitude":74.35},{"City":"Cleveland","Country":"USA","CleanRegion":"North America","First_edition_year":2018,"latitude":41.49,"longitude":-81.69},{"City":"Paris","Country":"France","CleanRegion":"Western Europe","First_edition_year":2018,"latitude":48.90,"longitude":2.40},{"City":"Strasbourg","Country":"France","CleanRegion":"Western Europe","First_edition_year":2018,"latitude":48.57,"longitude":7.75}];
+
+const GROWTH = [{"y":1895,"c":1},{"y":1896,"c":2},{"y":1948,"c":3},{"y":1949,"c":4},{"y":1951,"c":5},{"y":1955,"c":7},{"y":1960,"c":8},{"y":1961,"c":9},{"y":1963,"c":10},{"y":1966,"c":11},{"y":1968,"c":12},{"y":1972,"c":13},{"y":1973,"c":15},{"y":1974,"c":16},{"y":1977,"c":19},{"y":1978,"c":21},{"y":1979,"c":22},{"y":1983,"c":24},{"y":1984,"c":26},{"y":1985,"c":28},{"y":1987,"c":31},{"y":1988,"c":34},{"y":1989,"c":36},{"y":1990,"c":37},{"y":1991,"c":38},{"y":1992,"c":41},{"y":1993,"c":45},{"y":1994,"c":49},{"y":1995,"c":53},{"y":1996,"c":55},{"y":1997,"c":61},{"y":1998,"c":65},{"y":1999,"c":68},{"y":2000,"c":73},{"y":2001,"c":75},{"y":2002,"c":77},{"y":2003,"c":84},{"y":2004,"c":86},{"y":2005,"c":95},{"y":2006,"c":102},{"y":2007,"c":106},{"y":2008,"c":120},{"y":2009,"c":127},{"y":2010,"c":135},{"y":2011,"c":136},{"y":2012,"c":145},{"y":2013,"c":153},{"y":2014,"c":160},{"y":2015,"c":167},{"y":2016,"c":174},{"y":2017,"c":189},{"y":2018,"c":200}];
+
+const REGIONS = [
+  {r:"Western Europe",n:57,col:"#c8a060"},
+  {r:"Asia",n:41,col:"#38c8c0"},
+  {r:"Eastern Europe",n:30,col:"#e04848"},
+  {r:"North America",n:23,col:"#4878d8"},
+  {r:"Latin America",n:17,col:"#58b858"},
+  {r:"Middle East",n:11,col:"#c858b8"},
+  {r:"Oceania",n:9,col:"#d89030"},
+  {r:"Africa",n:7,col:"#906030"},
+  {r:"Caribbean",n:3,col:"#40c080"}
+];
+
+const ERAS = [
+  {label:"Before 1970", color:"#7b3a10", max:1969},
+  {label:"1970 – 1989", color:"#c05818", max:1989},
+  {label:"1990 – 1999", color:"#e0a020", max:1999},
+  {label:"2000 – 2009", color:"#f0e030", max:2009},
+  {label:"2010 – 2018", color:"#60d8ff", max:2100},
+];
+function getEra(y){ return ERAS.find(e=>y<=e.max)||ERAS[4]; }
+
+// Build legend
+const leg = document.getElementById('legend');
+ERAS.forEach(e=>{
+  leg.innerHTML+=`<div class="leg-item"><div class="leg-dot" style="background:${e.color}"></div><span class="leg-lbl">${e.label}</span></div>`;
+});
+
+// ── MAP ──
+function drawMap(){
+  const cv=document.getElementById('mapCanvas');
+  const ctx=cv.getContext('2d');
+  const W=cv.width, H=cv.height;
+  ctx.fillStyle='#0d1018'; ctx.fillRect(0,0,W,H);
+
+  function px(lat,lon){
+    return [(lon+180)/360*W, (90-lat)/180*H];
+  }
+
+  // grid
+  ctx.strokeStyle='rgba(255,255,255,0.04)'; ctx.lineWidth=1;
+  [-30,0,30,60].forEach(lat=>{const[,y]=px(lat,0);ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();});
+  [-120,-60,0,60,120].forEach(lon=>{const[x]=px(0,lon);ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();});
+
+  // load world via topojson
+  const ts=document.createElement('script');
+  ts.src='https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js';
+  ts.onload=()=>{
+    fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+      .then(r=>r.json())
+      .then(world=>{
+        const countries=topojson.feature(world,world.objects.countries);
+        ctx.fillStyle='#1a2535'; ctx.strokeStyle='#243550'; ctx.lineWidth=0.7;
+        countries.features.forEach(f=>{
+          if(!f.geometry) return;
+          ctx.beginPath();
+          const draw=(rings)=>rings.forEach(ring=>{ring.forEach(([lon,lat],i)=>{const[x,y]=px(lat,lon);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.closePath();});
+          if(f.geometry.type==='Polygon') draw(f.geometry.coordinates);
+          else if(f.geometry.type==='MultiPolygon') f.geometry.coordinates.forEach(p=>draw(p));
+          ctx.fill(); ctx.stroke();
+        });
+        plotDots(ctx,W,H,px);
+      }).catch(()=>plotDots(ctx,W,H,px));
+  };
+  ts.onerror=()=>plotDots(ctx,W,H,px);
+  document.head.appendChild(ts);
+}
+
+function plotDots(ctx,W,H,px){
+  [...MAP_DATA].sort((a,b)=>a.First_edition_year-b.First_edition_year).forEach(d=>{
+    const era=getEra(d.First_edition_year);
+    const[x,y]=px(d.latitude,d.longitude);
+    if(x<0||x>W||y<0||y>H) return;
+    const r=5;
+    const g=ctx.createRadialGradient(x,y,0,x,y,r*4);
+    g.addColorStop(0,era.color+'60'); g.addColorStop(1,'transparent');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r*4,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=era.color; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(x,y,r*0.3,0,Math.PI*2); ctx.fill();
+  });
+}
+
+// ── GROWTH CHART ──
+function drawGrowth(){
+  const cv=document.getElementById('growthChart');
+  const ctx=cv.getContext('2d');
+  const W=cv.width, H=cv.height;
+  const pl=70,pr=30,pt=30,pb=55;
+  const iW=W-pl-pr, iH=H-pt-pb;
+  const xp=yr=>pl+(yr-1895)/(2018-1895)*iW;
+  const yp=v=>pt+iH-(v/200)*iH;
+
+  ctx.clearRect(0,0,W,H);
+
+  // gridlines + y labels
+  ctx.font='14px Inter'; ctx.textAlign='right';
+  [0,50,100,150,200].forEach(v=>{
+    ctx.strokeStyle='#c8a06012'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(pl,yp(v)); ctx.lineTo(pl+iW,yp(v)); ctx.stroke();
+    ctx.fillStyle='#504840'; ctx.fillText(v,pl-10,yp(v)+5);
+  });
+
+  // x labels
+  ctx.textAlign='center'; ctx.fillStyle='#504840';
+  [1895,1920,1950,1970,1990,2010,2018].forEach(yr=>{
+    ctx.fillText(yr,xp(yr),pt+iH+22);
+  });
+
+  // 1990 marker
+  ctx.strokeStyle='#c8a06035'; ctx.lineWidth=1.5; ctx.setLineDash([6,5]);
+  ctx.beginPath(); ctx.moveTo(xp(1990),pt); ctx.lineTo(xp(1990),pt+iH); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#c8a06070'; ctx.font='14px Inter'; ctx.textAlign='left';
+  ctx.fillText('← 1990: globalization begins',xp(1990)+6,pt+20);
+
+  // 2011 marker
+  ctx.strokeStyle='#e0503035'; ctx.lineWidth=1.5; ctx.setLineDash([6,5]);
+  ctx.beginPath(); ctx.moveTo(xp(2011),pt); ctx.lineTo(xp(2011),pt+iH); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#e0503070'; ctx.font='13px Inter'; ctx.textAlign='center';
+  ctx.fillText('2011: 1 new biennale',xp(2011),pt+iH+42);
+
+  // fill
+  ctx.beginPath();
+  ctx.moveTo(xp(GROWTH[0].y),pt+iH);
+  GROWTH.forEach(d=>ctx.lineTo(xp(d.y),yp(d.c)));
+  ctx.lineTo(xp(GROWTH[GROWTH.length-1].y),pt+iH);
+  ctx.closePath();
+  const gr=ctx.createLinearGradient(0,pt,0,pt+iH);
+  gr.addColorStop(0,'#c8a06050'); gr.addColorStop(1,'#c8a06005');
+  ctx.fillStyle=gr; ctx.fill();
+
+  // line
+  ctx.strokeStyle='#c8a060'; ctx.lineWidth=3; ctx.lineJoin='round';
+  ctx.beginPath();
+  GROWTH.forEach((d,i)=>{ if(i===0) ctx.moveTo(xp(d.y),yp(d.c)); else ctx.lineTo(xp(d.y),yp(d.c)); });
+  ctx.stroke();
+
+  // axis frame
+  ctx.strokeStyle='#c8a06030'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pl,pt); ctx.lineTo(pl,pt+iH); ctx.lineTo(pl+iW,pt+iH); ctx.stroke();
+
+  // axis labels
+  ctx.save(); ctx.translate(18,pt+iH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle='#504840'; ctx.font='14px Inter'; ctx.textAlign='center';
+  ctx.fillText('Total biennales',0,0); ctx.restore();
+  ctx.fillStyle='#504840'; ctx.textAlign='center';
+  ctx.fillText('Year',pl+iW/2,pt+iH+50);
+}
+
+// ── REGION CHART ──
+function drawRegions(){
+  const cv=document.getElementById('regionChart');
+  const ctx=cv.getContext('2d');
+  const W=cv.width, H=cv.height;
+  const pl=170, pr=60, pt=16, pb=40;
+  const iW=W-pl-pr, iH=H-pt-pb;
+  const maxN=57;
+  const bH=Math.floor(iH/REGIONS.length)-8;
+
+  ctx.clearRect(0,0,W,H);
+
+  REGIONS.forEach((r,i)=>{
+    const y=pt+i*(iH/REGIONS.length)+3;
+    const bw=(r.n/maxN)*iW;
+
+    // faint full bg bar
+    ctx.fillStyle=r.col+'18';
+    ctx.fillRect(pl,y,iW,bH);
+
+    // actual bar
+    ctx.fillStyle=r.col;
+    ctx.fillRect(pl,y,bw,bH);
+
+    // region name
+    ctx.fillStyle='#a09888'; ctx.font=`${Math.min(16,bH*0.72)}px Inter`;
+    ctx.textAlign='right';
+    ctx.fillText(r.r,pl-12,y+bH*0.70);
+
+    // count
+    ctx.fillStyle=r.col; ctx.font=`bold ${Math.min(16,bH*0.72)}px Inter`;
+    ctx.textAlign='left';
+    ctx.fillText(r.n,pl+bw+8,y+bH*0.70);
+  });
+
+  // axis
+  ctx.strokeStyle='#c8a06025'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pl,pt); ctx.lineTo(pl,pt+iH); ctx.stroke();
+
+  // x tick labels
+  [0,10,20,30,40,50].forEach(v=>{
+    const x=pl+(v/maxN)*iW;
+    ctx.strokeStyle='#c8a06010'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(x,pt); ctx.lineTo(x,pt+iH); ctx.stroke();
+    ctx.fillStyle='#504840'; ctx.font='13px Inter'; ctx.textAlign='center';
+    ctx.fillText(v,x,pt+iH+20);
+  });
+
+  ctx.fillStyle='#504840'; ctx.font='14px Inter'; ctx.textAlign='center';
+  ctx.fillText('Number of biennales',pl+iW/2,pt+iH+38);
+}
+
+window.onload=()=>{ drawMap(); drawGrowth(); drawRegions(); };
+</script>
+</body>
+</html>
