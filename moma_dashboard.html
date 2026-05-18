@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>60 Years of Exhibitions at MoMA</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: #f5f5f3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .db {
+    width: 1100px;
+    height: 740px;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 0.5px solid #e0dfd8;
+    padding: 24px 28px 18px;
+    display: grid;
+    grid-template-rows: auto auto auto 1fr auto;
+    gap: 12px;
+    overflow: hidden;
+  }
+
+  /* ── HEADER ── */
+  .hdr {
+    padding-bottom: 12px;
+    border-bottom: 0.5px solid #e0dfd8;
+  }
+  .eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 5px;
+  }
+  .hdr h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a1a18;
+    line-height: 1.1;
+  }
+  .hdr-sub {
+    font-size: 14px;
+    color: #555;
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+  .hdr-audience {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  /* ── CONTROLS ── */
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 9px 14px;
+    background: #f5f5f3;
+    border-radius: 8px;
+    border: 0.5px solid #e0dfd8;
+  }
+  .ctrl-group { display: flex; align-items: center; gap: 8px; }
+  .ctrl-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    white-space: nowrap;
+  }
+  .ctrl-group select {
+    font-size: 13px;
+    padding: 4px 9px;
+    border: 0.5px solid #ccc;
+    border-radius: 6px;
+    background: #fff;
+    color: #1a1a18;
+    cursor: pointer;
+    outline: none;
+  }
+  .ctrl-group select:focus { border-color: #1a5fa8; }
+  .cdiv { width: 0.5px; height: 22px; background: #e0dfd8; flex-shrink: 0; }
+  .reset-btn {
+    font-size: 11px;
+    color: #aaa;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+    margin-left: auto;
+  }
+  .reset-btn:hover { color: #1a1a18; }
+
+  /* ── KPI ROW ── */
+  .kpi-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  .kpi {
+    background: #f5f5f3;
+    border-radius: 8px;
+    padding: 12px 16px;
+  }
+  .kpi-lbl {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: #999;
+    margin-bottom: 6px;
+  }
+  .kpi-val {
+    font-size: 28px;
+    font-weight: 600;
+    color: #1a1a18;
+    line-height: 1;
+  }
+  .kpi-val.blue { color: #1a5fa8; }
+  .kpi-unit { font-size: 14px; font-weight: 400; color: #666; margin-left: 3px; }
+  .kpi-sub { font-size: 11px; color: #aaa; margin-top: 4px; }
+
+  /* ── CHARTS AREA ── */
+  .charts-area { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; min-height: 0; }
+  .bottom-area { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; min-height: 0; }
+
+  .panel {
+    background: #ffffff;
+    border: 0.5px solid #e0dfd8;
+    border-radius: 10px;
+    padding: 13px 15px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .ptitle { font-size: 13px; font-weight: 600; color: #1a1a18; margin-bottom: 2px; flex-shrink: 0; }
+  .psub { font-size: 11px; color: #aaa; margin-bottom: 9px; flex-shrink: 0; }
+  .pbody { flex: 1; min-height: 0; position: relative; }
+
+  /* ── NATIONALITY BARS ── */
+  .nat-bars { display: flex; flex-direction: column; gap: 7px; }
+  .nat-row { display: flex; align-items: center; gap: 8px; }
+  .nat-name { font-size: 12px; color: #555; width: 65px; text-align: right; flex-shrink: 0; }
+  .nat-track { flex: 1; background: #f0efe8; border-radius: 2px; height: 15px; overflow: hidden; }
+  .nat-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
+  .nat-num { font-size: 11px; color: #aaa; width: 32px; flex-shrink: 0; }
+
+  /* ── WOMEN BARS ── */
+  .wb-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+  .wb-label { font-size: 12px; color: #555; width: 36px; flex-shrink: 0; }
+  .wb-track { flex: 1; background: #f0efe8; border-radius: 2px; height: 14px; overflow: hidden; }
+  .wb-fill { height: 100%; border-radius: 2px; background: #4a9068; transition: width 0.4s ease; }
+  .wb-pct { font-size: 11px; color: #aaa; width: 30px; flex-shrink: 0; text-align: right; }
+
+  /* ── SOLO BARS ── */
+  .solo-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .solo-label { font-size: 12px; color: #555; width: 42px; flex-shrink: 0; }
+  .solo-track { flex: 1; background: #f0efe8; border-radius: 2px; height: 20px; overflow: hidden; }
+  .solo-fill { height: 100%; border-radius: 2px; display: flex; align-items: center; padding-left: 8px; transition: width 0.4s ease; }
+  .solo-fill span { font-size: 12px; font-weight: 600; }
+  .fa { background: #1a5fa8; } .fa span { color: #e6f1fb; }
+  .fb { background: #c8dff5; } .fb span { color: #0c447c; }
+  .fc { background: #e8e8e4; } .fc span { color: #888; }
+
+  /* ── FOOTER ── */
+  .footer {
+    font-size: 10px;
+    color: #bbb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 8px;
+    border-top: 0.5px solid #e0dfd8;
+    flex-shrink: 0;
+  }
+  .legend { display: flex; gap: 14px; }
+  .leg { display: flex; align-items: center; gap: 5px; }
+  .ldot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<div class="db">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <p class="eyebrow">Museum of Modern Art, New York · Exhibition History</p>
+    <h1>60 Years of Exhibitions at MoMA</h1>
+    <p class="hdr-sub">How MoMA's programming evolved from 1929 to 1989 — across time, geography, and representation</p>
+    <p class="hdr-audience">For general audiences and cultural researchers curious about modern art history · Use the filters below to explore</p>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div class="ctrl-group">
+      <span class="ctrl-label">Filter by decade</span>
+      <select id="decadeFilter">
+        <option value="all">All decades</option>
+        <option value="1930">1930s</option>
+        <option value="1940">1940s</option>
+        <option value="1950">1950s</option>
+        <option value="1960">1960s</option>
+        <option value="1970">1970s</option>
+        <option value="1980">1980s</option>
+      </select>
+    </div>
+    <div class="cdiv"></div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">Filter by nationality</span>
+      <select id="natFilter">
+        <option value="all">All nationalities</option>
+        <option value="American">American</option>
+        <option value="French">French</option>
+        <option value="German">German</option>
+        <option value="British">British</option>
+        <option value="Spanish">Spanish</option>
+      </select>
+    </div>
+    <div class="cdiv"></div>
+    <button class="reset-btn" onclick="resetFilters()">Reset filters</button>
+  </div>
+
+  <!-- KPI ROW -->
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-lbl">Total exhibitions</div>
+      <div><span class="kpi-val blue" id="kpi-exh">1,727</span></div>
+      <div class="kpi-sub" id="kpi-exh-sub">1929 – 1989</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">Avg. duration</div>
+      <div><span class="kpi-val" id="kpi-dur">70</span><span class="kpi-unit">days</span></div>
+      <div class="kpi-sub">per exhibition</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">Solo shows</div>
+      <div><span class="kpi-val" id="kpi-solo">176</span><span class="kpi-unit">/ <span id="kpi-solo-of">1,727</span></span></div>
+      <div class="kpi-sub" id="kpi-solo-pct">10% of total</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">Shows incl. women</div>
+      <div><span class="kpi-val" id="kpi-women">734</span><span class="kpi-unit">/ <span id="kpi-women-of">1,727</span></span></div>
+      <div class="kpi-sub" id="kpi-women-pct">42% of total</div>
+    </div>
+  </div>
+
+  <!-- MAIN CHARTS -->
+  <div class="charts-area">
+    <div class="panel">
+      <div class="ptitle">Exhibitions per year</div>
+      <div class="psub">Number of distinct exhibitions opened each year — select a decade above to zoom in</div>
+      <div class="pbody">
+        <canvas id="lineChart"></canvas>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Exhibitions per decade</div>
+      <div class="psub">Total count — darker bar marks the peak decade</div>
+      <div class="pbody">
+        <canvas id="barChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM ROW -->
+  <div class="bottom-area">
+    <div class="panel">
+      <div class="ptitle">Top nationalities</div>
+      <div class="psub">Exhibitions featuring artists of each origin</div>
+      <div class="nat-bars" id="natBars"></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Women's representation</div>
+      <div class="psub">% of exhibitions including at least one woman artist</div>
+      <div id="womenBars" style="margin-top:3px"></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Solo vs. group shows</div>
+      <div class="psub">Exhibitions by number of artists featured</div>
+      <div id="soloWrap" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span>Source: MoMA Exhibition Index 1929–1989 &nbsp;·&nbsp; Unit of analysis: exhibition (1,727 unique exhibitions aggregated from 34,558 records)</span>
+    <div class="legend">
+      <span class="leg"><span class="ldot" style="background:#1a5fa8"></span>Exhibitions</span>
+      <span class="leg"><span class="ldot" style="background:#4a9068"></span>Women's presence</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const DATA = {
+  byYear: {"1929":2,"1930":8,"1931":5,"1932":7,"1933":22,"1934":17,"1935":10,"1936":13,"1937":23,"1938":18,"1939":10,"1940":30,"1941":46,"1942":48,"1943":37,"1944":35,"1945":33,"1946":36,"1947":26,"1948":35,"1949":37,"1950":32,"1951":32,"1952":30,"1953":22,"1954":19,"1955":27,"1956":19,"1957":16,"1958":12,"1959":18,"1960":24,"1961":28,"1962":19,"1963":15,"1964":25,"1965":33,"1966":32,"1967":33,"1968":34,"1969":43,"1970":39,"1971":41,"1972":37,"1973":35,"1974":40,"1975":37,"1976":47,"1977":43,"1978":52,"1979":46,"1980":24,"1981":33,"1982":18,"1983":32,"1984":22,"1985":32,"1986":30,"1987":35,"1988":38,"1989":35},
+  byDecade: {"1930":133,"1940":363,"1950":227,"1960":286,"1970":417,"1980":299},
+  women: {"all":{t:1727,w:734},"1930":{t:133,w:46},"1940":{t:363,w:127},"1950":{t:227,w:96},"1960":{t:286,w:108},"1970":{t:417,w:192},"1980":{t:299,w:164}},
+  nats: {
+    "all":  {"American":1343,"French":575,"German":399,"British":371,"Spanish":327,"Italian":308},
+    "1930": {"American":92,"French":50,"German":35,"Spanish":31,"Italian":26,"British":22},
+    "1940": {"American":250,"French":113,"Spanish":72,"German":71,"British":56,"Mexican":45},
+    "1950": {"American":192,"French":98,"German":59,"Italian":57,"Spanish":51,"British":49},
+    "1960": {"American":233,"French":106,"British":70,"German":68,"Spanish":59,"Italian":52},
+    "1970": {"American":340,"French":119,"British":90,"German":84,"Italian":71,"Spanish":61},
+    "1980": {"American":234,"French":88,"British":84,"German":82,"Italian":59,"Spanish":53}
+  },
+  solo: {"all":{s:176,g:1442,n:109},"1930":{s:24,g:95,n:14},"1940":{s:56,g:251,n:56},"1950":{s:16,g:198,n:13},"1960":{s:28,g:241,n:17},"1970":{s:31,g:382,n:4},"1980":{s:21,g:273,n:5}},
+  dur:  {"all":70,"1930":46,"1940":71,"1950":61,"1960":80,"1970":69,"1980":79}
+};
+
+const BLUE = '#1a5fa8';
+const DARK_BLUE = '#0c447c';
+const GREEN = '#4a9068';
+const GRID_C = 'rgba(0,0,0,0.06)';
+const TICK_C = 'rgba(0,0,0,0.42)';
+
+let curD = 'all', curN = 'all';
+let lineChart, barChart;
+
+function getYears(d) {
+  const all = Object.keys(DATA.byYear).map(Number);
+  if (d === 'all') return all;
+  return all.filter(y => y >= parseInt(d) && y < parseInt(d) + 10);
+}
+
+function initCharts() {
+  const yrs = getYears('all');
+
+  lineChart = new Chart(document.getElementById('lineChart'), {
+    type: 'line',
+    data: {
+      labels: yrs.map(String),
+      datasets: [{
+        data: yrs.map(y => DATA.byYear[String(y)] || 0),
+        borderColor: BLUE,
+        backgroundColor: 'rgba(26,95,168,0.07)',
+        borderWidth: 1.5,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+        fill: true,
+        tension: 0.35
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ' ' + ctx.raw + ' exhibitions' } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: TICK_C, font: { size: 11 }, maxTicksLimit: 12 }, border: { display: false } },
+        y: { grid: { color: GRID_C }, ticks: { color: TICK_C, font: { size: 11 } }, border: { display: false }, beginAtZero: true }
+      }
+    }
+  });
+
+  const vals = [133, 363, 227, 286, 417, 299];
+  const mx = Math.max(...vals);
+
+  barChart = new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {
+      labels: ['1930s','1940s','1950s','1960s','1970s','1980s'],
+      datasets: [{
+        data: vals,
+        backgroundColor: vals.map(v => v === mx ? DARK_BLUE : BLUE),
+        borderRadius: 4,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ' ' + ctx.raw + ' exhibitions' } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: TICK_C, font: { size: 11 } }, border: { display: false } },
+        y: { grid: { color: GRID_C }, ticks: { color: TICK_C, font: { size: 11 } }, border: { display: false }, beginAtZero: true }
+      }
+    }
+  });
+}
+
+function renderNat(d, n) {
+  const raw = DATA.nats[d === 'all' ? 'all' : d] || DATA.nats['all'];
+  const entries = Object.entries(raw).sort((a,b) => b[1]-a[1]).slice(0, 6);
+  const mx = entries[0][1];
+  const container = document.getElementById('natBars');
+
+  // If a nationality is selected, show a prominent callout + dimmed bars
+  if (n !== 'all') {
+    const selectedVal = raw[n] || 0;
+    const tot = d === 'all' ? 1727 : (DATA.byDecade[d] || 1727);
+    const pct = Math.round(selectedVal / tot * 100);
+    const periodLabel = d === 'all' ? '1929–1989' : `the ${d}s`;
+    container.innerHTML = `
+      <div style="background:#e8f0fb;border-radius:6px;padding:10px 12px;margin-bottom:10px;border-left:3px solid ${DARK_BLUE}">
+        <div style="font-size:22px;font-weight:600;color:${DARK_BLUE}">${selectedVal} <span style="font-size:13px;font-weight:400;color:#555">exhibitions</span></div>
+        <div style="font-size:11px;color:#555;margin-top:2px">featured <strong>${n}</strong> artists in ${periodLabel}</div>
+        <div style="font-size:11px;color:#888;margin-top:1px">${pct}% of all exhibitions in this period</div>
+      </div>
+      ${entries.map(([name, val]) => {
+        const barPct = Math.round(val / mx * 100);
+        const isSelected = name === n;
+        return `<div class="nat-row">
+          <span class="nat-name" style="opacity:${isSelected?1:0.25};font-weight:${isSelected?600:400}">${name}</span>
+          <div class="nat-track"><div class="nat-fill" style="width:${barPct}%;background:${isSelected?DARK_BLUE:BLUE};opacity:${isSelected?1:0.2}"></div></div>
+          <span class="nat-num" style="opacity:${isSelected?1:0.25}">${val}</span>
+        </div>`;
+      }).join('')}`;
+    return;
+  }
+
+  // Default: show all bars normally
+  container.innerHTML = entries.map(([name, val]) => {
+    const pct = Math.round(val / mx * 100);
+    return `<div class="nat-row">
+      <span class="nat-name">${name}</span>
+      <div class="nat-track"><div class="nat-fill" style="width:${pct}%;background:${BLUE}"></div></div>
+      <span class="nat-num">${val}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderWomen(d) {
+  const el = document.getElementById('womenBars');
+  if (d !== 'all') {
+    const dat = DATA.women[d];
+    if (!dat) { el.innerHTML = ''; return; }
+    const pct = Math.round(dat.w / dat.t * 100);
+    el.innerHTML = `<div style="text-align:center;padding:14px 0">
+      <div style="font-size:36px;font-weight:600;color:${GREEN}">${pct}%</div>
+      <div style="font-size:12px;color:#777;margin-top:5px;line-height:1.5">of ${dat.t} exhibitions in the ${d}s<br>included at least one woman artist</div>
+    </div>`;
+    return;
+  }
+  el.innerHTML = ['1930','1940','1950','1960','1970','1980'].map(dec => {
+    const dat = DATA.women[dec];
+    const pct = Math.round(dat.w / dat.t * 100);
+    return `<div class="wb-row">
+      <span class="wb-label">${dec}s</span>
+      <div class="wb-track"><div class="wb-fill" style="width:${pct}%"></div></div>
+      <span class="wb-pct">${pct}%</span>
+    </div>`;
+  }).join('');
+}
+
+function renderSolo(d) {
+  const dat = DATA.solo[d === 'all' ? 'all' : d] || DATA.solo['all'];
+  const tot = dat.s + dat.g + dat.n;
+  const sp = Math.round(dat.s / tot * 100);
+  const gp = Math.round(dat.g / tot * 100);
+  const np = 100 - sp - gp;
+  document.getElementById('soloWrap').innerHTML = `
+    <div class="solo-item">
+      <span class="solo-label">Solo</span>
+      <div class="solo-track"><div class="solo-fill fa" style="width:${Math.max(sp,4)}%"><span>${dat.s}</span></div></div>
+    </div>
+    <div class="solo-item">
+      <span class="solo-label">Group</span>
+      <div class="solo-track"><div class="solo-fill fb" style="width:${gp}%"><span>${dat.g}</span></div></div>
+    </div>
+    <div class="solo-item">
+      <span class="solo-label">Other</span>
+      <div class="solo-track"><div class="solo-fill fc" style="width:${Math.max(np,2)}%"><span>${dat.n}</span></div></div>
+    </div>
+    <div style="font-size:11px;color:#aaa;margin-top:4px">${sp}% solo · ${gp}% group · ${np}% institutional/other</div>`;
+}
+
+function updateKPIs(d) {
+  const wdat = DATA.women[d === 'all' ? 'all' : d] || DATA.women['all'];
+  const sd   = DATA.solo[d === 'all' ? 'all' : d]  || DATA.solo['all'];
+  const tot  = d === 'all' ? 1727 : (DATA.byDecade[d] || 0);
+  const lbl  = d === 'all' ? '1929 – 1989' : `${d} – ${parseInt(d)+9}`;
+  document.getElementById('kpi-exh').textContent     = tot.toLocaleString();
+  document.getElementById('kpi-exh-sub').textContent = lbl;
+  document.getElementById('kpi-dur').textContent     = DATA.dur[d === 'all' ? 'all' : d] || 70;
+  document.getElementById('kpi-solo').textContent    = sd.s.toLocaleString();
+  document.getElementById('kpi-solo-of').textContent = tot.toLocaleString();
+  document.getElementById('kpi-solo-pct').textContent = Math.round(sd.s / tot * 100) + '% of total';
+  document.getElementById('kpi-women').textContent    = wdat.w.toLocaleString();
+  document.getElementById('kpi-women-of').textContent = wdat.t.toLocaleString();
+  document.getElementById('kpi-women-pct').textContent = Math.round(wdat.w / wdat.t * 100) + '% of total';
+}
+
+function updateAll() {
+  const yrs = getYears(curD);
+  lineChart.data.labels = yrs.map(String);
+  lineChart.data.datasets[0].data = yrs.map(y => DATA.byYear[String(y)] || 0);
+  lineChart.update();
+  renderNat(curD, curN);
+  renderWomen(curD);
+  renderSolo(curD);
+  updateKPIs(curD);
+}
+
+function resetFilters() {
+  curD = 'all'; curN = 'all';
+  document.getElementById('decadeFilter').value = 'all';
+  document.getElementById('natFilter').value = 'all';
+  updateAll();
+}
+
+document.getElementById('decadeFilter').addEventListener('change', e => { curD = e.target.value; updateAll(); });
+document.getElementById('natFilter').addEventListener('change',   e => { curN = e.target.value; updateAll(); });
+
+initCharts();
+renderNat('all', 'all');
+renderWomen('all');
+renderSolo('all');
+</script>
+</body>
+</html>

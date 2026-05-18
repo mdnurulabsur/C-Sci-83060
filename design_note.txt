@@ -1,0 +1,15 @@
+Design Note — Homework 4
+
+For this dashboard I wanted to show MoMA's exhibition history in a way that someone with no data background could actually read. The audience I had in mind was someone who maybe studied art history or just likes museums — not someone who looks at dashboards every day. So the goal was: you open it, you immediately get the point.
+
+The first thing I worked on was hierarchy. I put four big numbers at the top — total exhibitions, average duration, solo shows, and women included — because I wanted those to land before anything else. Big font, bold weight, clearly separated from the labels underneath. Then the main chart takes up most of the middle section because time is the main story here — how MoMA's programming grew and changed across 60 years. The smaller panels at the bottom are more like supporting context, not the headline.
+
+For typography I kept it simple because I didn't want the text itself to become visual noise. I used bold for values and numbers, regular weight for descriptions, and uppercase small caps for category labels. That way there's a clear difference between what is a number and what is just a label, without needing different fonts or colors to do it.
+
+Spacing-wise everything follows the same grid — same padding inside each panel, same gap between sections. I think this is actually the thing that makes a dashboard feel organized or chaotic, even when you can't explain why. When things line up, it just reads more easily.
+
+For color I tried to be really restrained. White and light grey as the base, one blue for everything exhibition-related, and one green only for the women's representation panels because that's genuinely different data. I didn't want to use color just to make it look nice — I wanted each color to mean something specific.
+
+The two filters — decade and nationality — are both dropdowns placed right under the header in a labeled bar. I chose dropdowns because the professor mentioned those are the right control for categories, and I didn't want sliders for something like nationality which has no range. The decade filter updates all panels at once. The nationality filter zooms into the nationality panel and shows the exact count and percentage for the selected country. Both filters work together — you can pick a decade and a nationality at the same time.
+
+Tools used: I used Claude (Anthropic) as an AI tool throughout this assignment — to process and aggregate the CSV data by exhibition unit as required, calculate all summary statistics directly from the dataset, and build the HTML/CSS/JavaScript code for the dashboard. I directed the design choices and reviewed and revised the output multiple times until it matched the requirements. The final file is a standalone HTML file that runs in any browser with no external data connection.
