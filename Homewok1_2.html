@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Internet Adoption by World Region 2000–2016</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0c0c0c;color:#e0e0e0;font-family:"IBM Plex Sans",sans-serif;min-height:100vh}
+
+.header{padding:36px 40px 0;max-width:1000px;margin:0 auto}
+.header h1{font-size:22px;font-weight:600;color:#f5f5f5;letter-spacing:-0.2px;margin-bottom:6px}
+.header .sub{font-size:12.5px;color:#666;font-weight:300;line-height:1.7;max-width:680px}
+.meta{font-family:"IBM Plex Mono",monospace;font-size:10px;color:#333;margin-top:10px;text-transform:uppercase;letter-spacing:.6px}
+
+.controls{display:flex;align-items:center;gap:14px;padding:20px 40px 0;max-width:1000px;margin:0 auto;flex-wrap:wrap}
+.search-wrap{position:relative;flex:0 0 220px}
+.search-wrap input{width:100%;background:#161616;border:1px solid #2a2a2a;color:#e0e0e0;font-family:"IBM Plex Sans",sans-serif;font-size:12px;padding:7px 10px 7px 28px;border-radius:4px;outline:none;transition:border .2s}
+.search-wrap input:focus{border-color:#444}
+.search-wrap input::placeholder{color:#444}
+.search-icon{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:#444;font-size:12px}
+.search-results{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:4px;z-index:200;max-height:200px;overflow-y:auto;display:none}
+.search-results.open{display:block}
+.search-result-item{padding:7px 10px;font-size:12px;cursor:pointer;transition:background .15s}
+.search-result-item:hover{background:#252525}
+.sr-region{font-size:10px;color:#555;font-family:"IBM Plex Mono",monospace}
+
+.year-filter{display:flex;gap:6px;align-items:center}
+.yf-label{font-size:11px;color:#555;font-family:"IBM Plex Mono",monospace;text-transform:uppercase;letter-spacing:.5px}
+.ybtn{background:transparent;border:1px solid #2a2a2a;color:#555;font-family:"IBM Plex Mono",monospace;font-size:11px;padding:5px 10px;border-radius:3px;cursor:pointer;transition:all .2s}
+.ybtn:hover{border-color:#444;color:#aaa}
+.ybtn.active{background:#e0e0e0;color:#0c0c0c;border-color:transparent}
+
+.legend-bar{display:flex;gap:20px;padding:16px 40px 0;max-width:1000px;margin:0 auto;flex-wrap:wrap;align-items:center}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:11px;color:#666}
+.legend-rect{width:18px;height:6px;border-radius:1px;flex-shrink:0}
+.legend-dash{width:18px;height:0;border-top:1.5px dashed;flex-shrink:0;opacity:0.6}
+
+.nav-pills{display:flex;gap:8px;padding:18px 40px 0;max-width:1000px;margin:0 auto;flex-wrap:wrap}
+.nav-pill{font-size:10.5px;font-family:"IBM Plex Mono",monospace;padding:4px 11px;border-radius:2px;border:1px solid #1e1e1e;cursor:pointer;background:transparent;transition:all .2s;color:#444;text-decoration:none;display:inline-block}
+.nav-pill:hover{color:#aaa;border-color:#444}
+
+.content{padding:24px 40px 60px;max-width:1000px;margin:0 auto}
+
+.region-section{margin-bottom:40px;border:1px solid #1a1a1a;border-radius:6px;background:#0f0f0f;overflow:hidden}
+.rs-header{padding:16px 20px 10px;border-bottom:1px solid #161616}
+.rs-title{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:4px}
+.rs-meta{font-size:11px;color:#444;line-height:1.6}
+.rs-chart{padding:14px 16px 8px;overflow-x:auto}
+
+.highlight-bar rect{filter:brightness(1.4)}
+
+#tooltip{position:fixed;background:#181818;border:1px solid #2e2e2e;padding:11px 14px;border-radius:5px;font-size:12px;pointer-events:none;display:none;z-index:999;min-width:200px;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+.tt-country{font-weight:600;font-size:13px;margin-bottom:3px}
+.tt-region{font-size:10px;font-family:"IBM Plex Mono",monospace;color:#555;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px}
+.tt-years{display:grid;grid-template-columns:auto auto;gap:3px 16px}
+.tt-year-row{font-size:11px;color:#888}
+.tt-year-row span{color:#e0e0e0;font-weight:500}
+
+.searched-country{outline:2px solid #ffe066;outline-offset:1px}
+.source{text-align:center;font-size:10px;color:#2a2a2a;padding:20px 0 30px;font-family:"IBM Plex Mono",monospace}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Internet Adoption by World Region, 2000–2016</h1>
+  <p class="sub">Each panel shows one of the 10 world regions from the dataset. Countries are sorted by 2016 internet usage, highest to lowest. Each bar shows usage at a point in time. The dashed vertical line marks the regional average for 2016. Hover any bar for details. Use the search box to find any country.</p>
+  <div class="meta">Source: Our World in Data / World Bank &nbsp;·&nbsp; C-Sci-83060 &nbsp;·&nbsp; 189 countries &nbsp;·&nbsp; 10 regions &nbsp;·&nbsp; Years: 2000, 2005, 2010, 2016</div>
+</div>
+
+<div class="controls">
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input type="text" id="searchInput" placeholder="Search any country…" autocomplete="off">
+    <div class="search-results" id="searchResults"></div>
+  </div>
+  <div class="year-filter">
+    <span class="yf-label">Highlight year:</span>
+    <button class="ybtn" data-year="2000" onclick="highlightYear(this)">2000</button>
+    <button class="ybtn" data-year="2005" onclick="highlightYear(this)">2005</button>
+    <button class="ybtn" data-year="2010" onclick="highlightYear(this)">2010</button>
+    <button class="ybtn active" data-year="2016" onclick="highlightYear(this)">2016</button>
+    <button class="ybtn" data-year="all" onclick="highlightYear(this)">All</button>
+  </div>
+</div>
+
+<div class="legend-bar">
+  <span style="font-size:11px;color:#555;font-family:IBM Plex Mono,monospace;text-transform:uppercase;letter-spacing:.4px">Years:</span>
+  <div class="legend-item"><div class="legend-rect" style="background:#333"></div><span>2000</span></div>
+  <div class="legend-item"><div class="legend-rect" style="background:#4a4a4a"></div><span>2005</span></div>
+  <div class="legend-item"><div class="legend-rect" style="background:#777"></div><span>2010</span></div>
+  <div class="legend-item"><div class="legend-rect" style="background:#e0e0e0"></div><span>2016 (latest)</span></div>
+  <div class="legend-item" style="margin-left:10px"><div class="legend-dash" style="border-color:#aaa"></div><span>Regional average 2016</span></div>
+</div>
+
+<div class="nav-pills" id="navPills"></div>
+
+<div class="content">
+  
+<div class="region-section" id="rs_Arab_World">
+  <div class="rs-header">
+    <div class="rs-title" style="color:#f0a500">Arab World</div>
+    <div class="rs-meta">20 countries &nbsp;·&nbsp; Regional average 2016: <span style="color:#f0a500;font-weight:600">42.7%</span></div>
+  </div>
+  <div class="rs-chart"><svg viewBox="0 0 860 504" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+<line x1="135.0" y1="26" x2="135.0" y2="484" stroke="#1a1a1a" stroke-width="1"/>
+<text x="135.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">0%</text>
+<line x1="302.5" y1="26" x2="302.5" y2="484" stroke="#1a1a1a" stroke-width="1"/>
+<text x="302.5" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">25%</text>
+<line x1="470.0" y1="26" x2="470.0" y2="484" stroke="#1a1a1a" stroke-width="1"/>
+<text x="470.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">50%</text>
+<line x1="637.5" y1="26" x2="637.5" y2="484" stroke="#1a1a1a" stroke-width="1"/>
+<text x="637.5" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">75%</text>
+<line x1="805.0" y1="26" x2="805.0" y2="484" stroke="#1a1a1a" stroke-width="1"/>
+<text x="805.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">100%</text>
+<line x1="421.1" y1="26" x2="421.1" y2="484" stroke="#f0a500" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+<text x="424.1" y="22" font-size="7.5" fill="#f0a500" font-family="IBM Plex Mono,monospace" font-weight="600">42.7% regional avg</text>
+<text x="129" y="48.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Bahrain</text>
+<rect x="135" y="36" width="41.5" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="40" width="142.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="44" width="368.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="48" width="656.6" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="795.6" y="48.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">98.0%</text>
+<line x1="135" y1="55" x2="805" y2="55" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="70.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Qatar</text>
+<rect x="135" y="58" width="32.8" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="62" width="165.5" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="66" width="462.3" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="70" width="631.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="770.8" y="70.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">94.3%</text>
+<line x1="135" y1="77" x2="805" y2="77" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="92.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">United Arab Emirates</text>
+<rect x="135" y="80" width="158.1" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="84" width="268.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="88" width="455.6" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="92" width="607.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="746.0" y="92.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">90.6%</text>
+<line x1="135" y1="99" x2="805" y2="99" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="114.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Kuwait</text>
+<rect x="135" y="102" width="44.9" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="106" width="173.5" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="110" width="411.4" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="114" width="525.3" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="664.3" y="114.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">78.4%</text>
+<line x1="135" y1="121" x2="805" y2="121" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="136.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Oman</text>
+<rect x="135" y="124" width="23.5" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="128" width="44.9" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="132" width="239.9" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="136" width="514.6" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="653.6" y="136.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">76.8%</text>
+<line x1="135" y1="143" x2="805" y2="143" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="158.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Lebanon</text>
+<rect x="135" y="146" width="53.6" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="150" width="67.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="154" width="292.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="158" width="509.9" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="648.9" y="158.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">76.1%</text>
+<line x1="135" y1="165" x2="805" y2="165" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="180.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Saudi Arabia</text>
+<rect x="135" y="168" width="14.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="172" width="85.1" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="176" width="274.7" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="180" width="501.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="640.8" y="180.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">74.9%</text>
+<line x1="135" y1="187" x2="805" y2="187" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="202.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Jordan</text>
+<rect x="135" y="190" width="17.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="194" width="86.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="198" width="182.2" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="202" width="417.4" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="556.4" y="202.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">62.3%</text>
+<line x1="135" y1="209" x2="805" y2="209" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="224.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Palestine</text>
+<rect x="135" y="212" width="7.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="216" width="107.2" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="220" width="250.6" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="224" width="410.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="549.0" y="224.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">61.2%</text>
+<line x1="135" y1="231" x2="805" y2="231" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="246.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Morocco</text>
+<rect x="135" y="234" width="4.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="238" width="101.2" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="242" width="348.4" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="246" width="390.6" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="529.6" y="246.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">58.3%</text>
+<line x1="135" y1="253" x2="805" y2="253" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="268.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Tunisia</text>
+<rect x="135" y="256" width="18.8" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="260" width="65.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="264" width="246.6" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="268" width="332.3" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="471.3" y="268.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">49.6%</text>
+<line x1="135" y1="275" x2="805" y2="275" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="290.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Algeria</text>
+<rect x="135" y="278" width="3.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="282" width="38.9" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="286" width="83.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="290" width="287.4" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="426.4" y="290.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">42.9%</text>
+<line x1="135" y1="297" x2="805" y2="297" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="312.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Egypt</text>
+<rect x="135" y="300" width="4.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="304" width="85.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="308" width="144.7" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="312" width="276.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="415.0" y="312.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">41.2%</text>
+<line x1="135" y1="319" x2="805" y2="319" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="334.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Sudan</text>
+<rect x="135" y="322" width="0.5" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="326" width="8.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="330" width="111.9" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="334" width="187.6" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="326.6" y="334.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">28.0%</text>
+<line x1="135" y1="341" x2="805" y2="341" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="356.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Yemen</text>
+<rect x="135" y="344" width="0.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="348" width="6.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="352" width="82.4" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="356" width="164.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="303.8" y="356.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">24.6%</text>
+<line x1="135" y1="363" x2="805" y2="363" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="378.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Iraq</text>
+<rect x="135" y="370" width="6.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="374" width="16.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="378" width="142.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="281.0" y="378.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">21.2%</text>
+<line x1="135" y1="385" x2="805" y2="385" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="400.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Libya</text>
+<rect x="135" y="388" width="1.3" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="392" width="26.1" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="396" width="93.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="400" width="136.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="275.0" y="400.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">20.3%</text>
+<line x1="135" y1="407" x2="805" y2="407" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="422.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Mauritania</text>
+<rect x="135" y="410" width="1.3" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="414" width="4.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="418" width="26.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="422" width="120.6" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="259.6" y="422.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">18.0%</text>
+<line x1="135" y1="429" x2="805" y2="429" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="444.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Djibouti</text>
+<rect x="135" y="432" width="1.3" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="436" width="6.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="440" width="43.6" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="444" width="87.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="226.8" y="444.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">13.1%</text>
+<line x1="135" y1="451" x2="805" y2="451" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="466.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Comoros</text>
+<rect x="135" y="454" width="2.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="458" width="13.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="462" width="34.2" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="466" width="52.9" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="191.9" y="466.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">7.9%</text>
+<line x1="135" y1="473" x2="805" y2="473" stroke="#161616" stroke-width="0.5"/>
+</svg></div>
+</div>
+
+<div class="region-section" id="rs_Caribbean_small_states">
+  <div class="rs-header">
+    <div class="rs-title" style="color:#ce93d8">Caribbean small states</div>
+    <div class="rs-meta">16 countries &nbsp;·&nbsp; Regional average 2016: <span style="color:#ce93d8;font-weight:600">53.6%</span></div>
+  </div>
+  <div class="rs-chart"><svg viewBox="0 0 860 416" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+<line x1="135.0" y1="26" x2="135.0" y2="396" stroke="#1a1a1a" stroke-width="1"/>
+<text x="135.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">0%</text>
+<line x1="302.5" y1="26" x2="302.5" y2="396" stroke="#1a1a1a" stroke-width="1"/>
+<text x="302.5" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">25%</text>
+<line x1="470.0" y1="26" x2="470.0" y2="396" stroke="#1a1a1a" stroke-width="1"/>
+<text x="470.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">50%</text>
+<line x1="637.5" y1="26" x2="637.5" y2="396" stroke="#1a1a1a" stroke-width="1"/>
+<text x="637.5" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">75%</text>
+<line x1="805.0" y1="26" x2="805.0" y2="396" stroke="#1a1a1a" stroke-width="1"/>
+<text x="805.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">100%</text>
+<line x1="494.1" y1="26" x2="494.1" y2="396" stroke="#ce93d8" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+<text x="497.1" y="22" font-size="7.5" fill="#ce93d8" font-family="IBM Plex Mono,monospace" font-weight="600">53.6% regional avg</text>
+<text x="129" y="48.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Bahamas</text>
+<rect x="135" y="36" width="53.6" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="40" width="167.5" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="44" width="288.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="48" width="536.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="675.0" y="48.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">80.0%</text>
+<line x1="135" y1="55" x2="805" y2="55" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="70.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Barbados</text>
+<rect x="135" y="58" width="26.8" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="62" width="351.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="66" width="436.2" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="70" width="532.6" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="671.6" y="70.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">79.5%</text>
+<line x1="135" y1="77" x2="805" y2="77" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="92.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Saint Kitts and Nevis</text>
+<rect x="135" y="80" width="39.5" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="84" width="227.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="88" width="422.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="92" width="514.6" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="653.6" y="92.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">76.8%</text>
+<line x1="135" y1="99" x2="805" y2="99" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="114.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Trinidad and Tobago</text>
+<rect x="135" y="102" width="51.6" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="106" width="194.3" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="110" width="324.9" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="114" width="491.1" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="630.1" y="114.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">73.3%</text>
+<line x1="135" y1="121" x2="805" y2="121" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="136.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Antigua and Barbuda</text>
+<rect x="135" y="124" width="43.6" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="128" width="180.9" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="132" width="314.9" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="136" width="489.1" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="628.1" y="136.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">73.0%</text>
+<line x1="135" y1="143" x2="805" y2="143" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="158.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Dominica</text>
+<rect x="135" y="146" width="59.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="150" width="257.9" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="154" width="318.2" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="158" width="448.9" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="587.9" y="158.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">67.0%</text>
+<line x1="135" y1="165" x2="805" y2="165" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="180.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Dominican Republic</text>
+<rect x="135" y="168" width="24.8" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="172" width="77.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="176" width="210.4" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="180" width="428.1" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="567.1" y="180.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">63.9%</text>
+<line x1="135" y1="187" x2="805" y2="187" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="202.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Grenada</text>
+<rect x="135" y="190" width="27.5" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="194" width="137.3" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="198" width="180.9" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="202" width="374.5" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="513.5" y="202.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">55.9%</text>
+<line x1="135" y1="209" x2="805" y2="209" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="224.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Saint Vincent and the Grenadines</text>
+<rect x="135" y="212" width="21.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="216" width="61.6" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="220" width="225.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="224" width="372.5" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="511.5" y="224.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">55.6%</text>
+<line x1="135" y1="231" x2="805" y2="231" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="246.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Saint Lucia</text>
+<rect x="135" y="234" width="34.2" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="238" width="144.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="242" width="217.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="246" width="312.9" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="451.9" y="246.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">46.7%</text>
+<line x1="135" y1="253" x2="805" y2="253" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="268.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Suriname</text>
+<rect x="135" y="256" width="16.8" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="260" width="42.9" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="264" width="211.7" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="268" width="304.2" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="443.2" y="268.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">45.4%</text>
+<line x1="135" y1="275" x2="805" y2="275" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="290.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Belize</text>
+<rect x="135" y="278" width="40.2" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="282" width="113.9" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="286" width="188.9" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="290" width="298.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="437.8" y="290.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">44.6%</text>
+<line x1="135" y1="297" x2="805" y2="297" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="312.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Jamaica</text>
+<rect x="135" y="300" width="20.8" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="304" width="85.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="308" width="185.6" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="312" width="297.5" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="436.5" y="312.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">44.4%</text>
+<line x1="135" y1="319" x2="805" y2="319" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="334.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Cuba</text>
+<rect x="135" y="322" width="3.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="326" width="65.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="330" width="106.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="334" width="288.1" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="427.1" y="334.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">43.0%</text>
+<line x1="135" y1="341" x2="805" y2="341" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="356.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Guyana</text>
+<rect x="135" y="344" width="44.2" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="352" width="200.3" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="356" width="239.2" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="378.2" y="356.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">35.7%</text>
+<line x1="135" y1="363" x2="805" y2="363" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="378.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Haiti</text>
+<rect x="135" y="366" width="1.3" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="370" width="42.9" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="374" width="56.3" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="378" width="81.7" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="220.7" y="378.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">12.2%</text>
+<line x1="135" y1="385" x2="805" y2="385" stroke="#161616" stroke-width="0.5"/>
+</svg></div>
+</div>
+
+<div class="region-section" id="rs_Central_Europe_and_the_Baltics">
+  <div class="rs-header">
+    <div class="rs-title" style="color:#4fc3f7">Central Europe and the Baltics</div>
+    <div class="rs-meta">11 countries &nbsp;·&nbsp; Regional average 2016: <span style="color:#4fc3f7;font-weight:600">71.4%</span></div>
+  </div>
+  <div class="rs-chart"><svg viewBox="0 0 860 306" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+<line x1="135.0" y1="26" x2="135.0" y2="286" stroke="#1a1a1a" stroke-width="1"/>
+<text x="135.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">0%</text>
+<line x1="302.5" y1="26" x2="302.5" y2="286" stroke="#1a1a1a" stroke-width="1"/>
+<text x="302.5" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">25%</text>
+<line x1="470.0" y1="26" x2="470.0" y2="286" stroke="#1a1a1a" stroke-width="1"/>
+<text x="470.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">50%</text>
+<line x1="637.5" y1="26" x2="637.5" y2="286" stroke="#1a1a1a" stroke-width="1"/>
+<text x="637.5" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">75%</text>
+<line x1="805.0" y1="26" x2="805.0" y2="286" stroke="#1a1a1a" stroke-width="1"/>
+<text x="805.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">100%</text>
+<line x1="613.4" y1="26" x2="613.4" y2="286" stroke="#4fc3f7" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+<text x="616.4" y="22" font-size="7.5" fill="#4fc3f7" font-family="IBM Plex Mono,monospace" font-weight="600">71.4% regional avg</text>
+<text x="129" y="48.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Estonia</text>
+<rect x="135" y="36" width="191.6" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="40" width="412.1" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="44" width="496.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="48" width="584.2" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="723.2" y="48.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">87.2%</text>
+<line x1="135" y1="55" x2="805" y2="55" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="70.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Slovakia</text>
+<rect x="135" y="58" width="63.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="62" width="369.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="66" width="507.2" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="70" width="539.4" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="678.4" y="70.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">80.5%</text>
+<line x1="135" y1="77" x2="805" y2="77" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="92.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Latvia</text>
+<rect x="135" y="80" width="42.2" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="84" width="308.2" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="88" width="458.3" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="92" width="534.7" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="673.7" y="92.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">79.8%</text>
+<line x1="135" y1="99" x2="805" y2="99" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="114.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Hungary</text>
+<rect x="135" y="102" width="46.9" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="106" width="261.3" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="110" width="435.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="114" width="531.3" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="670.3" y="114.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">79.3%</text>
+<line x1="135" y1="121" x2="805" y2="121" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="136.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Czechia</text>
+<rect x="135" y="124" width="65.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="128" width="236.5" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="132" width="461.0" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="136" width="512.5" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="651.5" y="136.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">76.5%</text>
+<line x1="135" y1="143" x2="805" y2="143" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="158.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Slovenia</text>
+<rect x="135" y="146" width="101.2" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="150" width="313.6" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="154" width="469.0" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="158" width="505.9" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="644.9" y="158.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">75.5%</text>
+<line x1="135" y1="165" x2="805" y2="165" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="180.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Lithuania</text>
+<rect x="135" y="168" width="42.9" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="172" width="242.5" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="176" width="416.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="180" width="498.5" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="637.5" y="180.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">74.4%</text>
+<line x1="135" y1="187" x2="805" y2="187" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="202.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Poland</text>
+<rect x="135" y="190" width="48.9" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="194" width="260.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="198" width="417.4" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="202" width="491.1" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="630.1" y="202.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">73.3%</text>
+<line x1="135" y1="209" x2="805" y2="209" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="224.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Croatia</text>
+<rect x="135" y="212" width="44.2" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="216" width="221.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="220" width="378.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="224" width="487.1" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="626.1" y="224.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">72.7%</text>
+<line x1="135" y1="231" x2="805" y2="231" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="246.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Bulgaria</text>
+<rect x="135" y="234" width="36.2" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="238" width="134.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="242" width="309.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="246" width="400.7" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="539.7" y="246.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">59.8%</text>
+<line x1="135" y1="253" x2="805" y2="253" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="268.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Romania</text>
+<rect x="135" y="256" width="24.1" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="260" width="144.1" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="264" width="267.3" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="268" width="398.6" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="537.6" y="268.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">59.5%</text>
+<line x1="135" y1="275" x2="805" y2="275" stroke="#161616" stroke-width="0.5"/>
+</svg></div>
+</div>
+
+<div class="region-section" id="rs_East_Asia_and_Pacific">
+  <div class="rs-header">
+    <div class="rs-title" style="color:#81c784">East Asia & Pacific</div>
+    <div class="rs-meta">19 countries &nbsp;·&nbsp; Regional average 2016: <span style="color:#81c784;font-weight:600">52.9%</span></div>
+  </div>
+  <div class="rs-chart"><svg viewBox="0 0 860 482" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+<line x1="135.0" y1="26" x2="135.0" y2="462" stroke="#1a1a1a" stroke-width="1"/>
+<text x="135.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">0%</text>
+<line x1="302.5" y1="26" x2="302.5" y2="462" stroke="#1a1a1a" stroke-width="1"/>
+<text x="302.5" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">25%</text>
+<line x1="470.0" y1="26" x2="470.0" y2="462" stroke="#1a1a1a" stroke-width="1"/>
+<text x="470.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">50%</text>
+<line x1="637.5" y1="26" x2="637.5" y2="462" stroke="#1a1a1a" stroke-width="1"/>
+<text x="637.5" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">75%</text>
+<line x1="805.0" y1="26" x2="805.0" y2="462" stroke="#1a1a1a" stroke-width="1"/>
+<text x="805.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">100%</text>
+<line x1="489.4" y1="26" x2="489.4" y2="462" stroke="#81c784" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+<text x="492.4" y="22" font-size="7.5" fill="#81c784" font-family="IBM Plex Mono,monospace" font-weight="600">52.9% regional avg</text>
+<text x="129" y="48.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Japan</text>
+<rect x="135" y="36" width="201.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="40" width="448.2" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="44" width="523.9" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="48" width="624.4" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="763.4" y="48.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">93.2%</text>
+<line x1="135" y1="55" x2="805" y2="55" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="70.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">South Korea</text>
+<rect x="135" y="58" width="299.5" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="62" width="492.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="66" width="560.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="70" width="621.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="760.8" y="70.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">92.8%</text>
+<line x1="135" y1="77" x2="805" y2="77" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="92.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Brunei</text>
+<rect x="135" y="80" width="60.3" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="84" width="244.5" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="88" width="355.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="92" width="603.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="742.0" y="92.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">90.0%</text>
+<line x1="135" y1="99" x2="805" y2="99" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="114.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">New Zealand</text>
+<rect x="135" y="102" width="317.6" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="106" width="420.1" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="110" width="539.4" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="114" width="593.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="732.0" y="114.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">88.5%</text>
+<line x1="135" y1="121" x2="805" y2="121" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="136.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Australia</text>
+<rect x="135" y="124" width="313.6" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="128" width="422.1" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="132" width="509.2" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="136" width="590.9" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="729.9" y="136.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">88.2%</text>
+<line x1="135" y1="143" x2="805" y2="143" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="158.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Singapore</text>
+<rect x="135" y="146" width="241.2" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="150" width="408.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="154" width="475.7" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="158" width="566.1" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="705.1" y="158.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">84.5%</text>
+<line x1="135" y1="165" x2="805" y2="165" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="180.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Malaysia</text>
+<rect x="135" y="168" width="143.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="172" width="325.6" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="176" width="377.2" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="180" width="528.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="667.0" y="180.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">78.8%</text>
+<line x1="135" y1="187" x2="805" y2="187" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="202.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Maldives</text>
+<rect x="135" y="190" width="14.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="194" width="46.2" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="198" width="177.6" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="202" width="396.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="535.0" y="202.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">59.1%</text>
+<line x1="135" y1="209" x2="805" y2="209" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="224.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Philippines</text>
+<rect x="135" y="212" width="13.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="216" width="36.2" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="220" width="167.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="224" width="371.9" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="510.9" y="224.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">55.5%</text>
+<line x1="135" y1="231" x2="805" y2="231" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="246.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">China</text>
+<rect x="135" y="234" width="12.1" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="238" width="57.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="242" width="229.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="246" width="356.4" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="495.4" y="246.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">53.2%</text>
+<line x1="135" y1="253" x2="805" y2="253" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="268.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Thailand</text>
+<rect x="135" y="256" width="24.8" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="260" width="100.5" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="264" width="150.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="268" width="318.2" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="457.2" y="268.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">47.5%</text>
+<line x1="135" y1="275" x2="805" y2="275" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="290.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Vietnam</text>
+<rect x="135" y="278" width="2.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="282" width="85.1" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="286" width="205.0" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="290" width="311.6" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="450.6" y="290.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">46.5%</text>
+<line x1="135" y1="297" x2="805" y2="297" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="312.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Cambodia</text>
+<rect x="135" y="300" width="0.5" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="304" width="2.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="308" width="8.7" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="312" width="217.1" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="356.1" y="312.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">32.4%</text>
+<line x1="135" y1="319" x2="805" y2="319" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="334.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Indonesia</text>
+<rect x="135" y="322" width="6.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="326" width="24.1" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="330" width="73.0" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="334" width="170.2" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="309.2" y="334.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">25.4%</text>
+<line x1="135" y1="341" x2="805" y2="341" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="356.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Timor</text>
+<rect x="135" y="348" width="0.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="352" width="20.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="356" width="168.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="307.8" y="356.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">25.2%</text>
+<line x1="135" y1="363" x2="805" y2="363" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="378.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Myanmar</text>
+<rect x="135" y="370" width="0.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="374" width="1.3" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="378" width="168.2" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="307.2" y="378.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">25.1%</text>
+<line x1="135" y1="385" x2="805" y2="385" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="400.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Mongolia</text>
+<rect x="135" y="388" width="8.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="396" width="68.3" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="400" width="149.4" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="288.4" y="400.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">22.3%</text>
+<line x1="135" y1="407" x2="805" y2="407" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="422.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Laos</text>
+<rect x="135" y="410" width="0.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="414" width="6.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="418" width="46.9" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="422" width="146.7" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="285.7" y="422.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">21.9%</text>
+<line x1="135" y1="429" x2="805" y2="429" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="444.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">North Korea</text>
+<rect x="135" y="432" width="0.5" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="436" width="0.5" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="440" width="0.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<line x1="135" y1="451" x2="805" y2="451" stroke="#161616" stroke-width="0.5"/>
+</svg></div>
+</div>
+
+<div class="region-section" id="rs_Europe_and_Central_Asia">
+  <div class="rs-header">
+    <div class="rs-title" style="color:#64b5f6">Europe & Central Asia</div>
+    <div class="rs-meta">44 countries &nbsp;·&nbsp; Regional average 2016: <span style="color:#64b5f6;font-weight:600">72.9%</span></div>
+  </div>
+  <div class="rs-chart"><svg viewBox="0 0 860 1032" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+<line x1="135.0" y1="26" x2="135.0" y2="1012" stroke="#1a1a1a" stroke-width="1"/>
+<text x="135.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">0%</text>
+<line x1="302.5" y1="26" x2="302.5" y2="1012" stroke="#1a1a1a" stroke-width="1"/>
+<text x="302.5" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">25%</text>
+<line x1="470.0" y1="26" x2="470.0" y2="1012" stroke="#1a1a1a" stroke-width="1"/>
+<text x="470.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">50%</text>
+<line x1="637.5" y1="26" x2="637.5" y2="1012" stroke="#1a1a1a" stroke-width="1"/>
+<text x="637.5" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">75%</text>
+<line x1="805.0" y1="26" x2="805.0" y2="1012" stroke="#1a1a1a" stroke-width="1"/>
+<text x="805.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">100%</text>
+<line x1="623.4" y1="26" x2="623.4" y2="1012" stroke="#64b5f6" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+<text x="626.4" y="22" font-size="7.5" fill="#64b5f6" font-family="IBM Plex Mono,monospace" font-weight="600">72.9% regional avg</text>
+<text x="129" y="48.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Iceland</text>
+<rect x="135" y="36" width="298.1" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="40" width="582.9" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="44" width="625.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="48" width="657.9" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="796.9" y="48.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">98.2%</text>
+<line x1="135" y1="55" x2="805" y2="55" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="70.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Liechtenstein</text>
+<rect x="135" y="58" width="244.5" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="62" width="424.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="66" width="536.0" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="70" width="657.3" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="796.3" y="70.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">98.1%</text>
+<line x1="135" y1="77" x2="805" y2="77" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="92.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Luxembourg</text>
+<rect x="135" y="80" width="153.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="84" width="469.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="88" width="607.0" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="92" width="657.3" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="796.3" y="92.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">98.1%</text>
+<line x1="135" y1="99" x2="805" y2="99" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="114.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Andorra</text>
+<rect x="135" y="102" width="70.3" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="106" width="251.9" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="110" width="542.7" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="114" width="655.9" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="794.9" y="114.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">97.9%</text>
+<line x1="135" y1="121" x2="805" y2="121" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="136.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Norway</text>
+<rect x="135" y="124" width="348.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="128" width="549.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="132" width="625.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="136" width="651.9" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="790.9" y="136.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">97.3%</text>
+<line x1="135" y1="143" x2="805" y2="143" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="158.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Denmark</text>
+<rect x="135" y="146" width="262.6" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="150" width="554.1" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="154" width="594.3" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="158" width="649.9" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="788.9" y="158.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">97.0%</text>
+<line x1="135" y1="165" x2="805" y2="165" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="180.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Monaco</text>
+<rect x="135" y="168" width="282.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="172" width="371.9" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="176" width="502.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="180" width="637.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="776.8" y="180.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">95.2%</text>
+<line x1="135" y1="187" x2="805" y2="187" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="202.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Faeroe Islands</text>
+<rect x="135" y="190" width="220.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="194" width="454.9" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="198" width="503.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="202" width="637.2" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="776.2" y="202.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">95.1%</text>
+<line x1="135" y1="209" x2="805" y2="209" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="224.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">United Kingdom</text>
+<rect x="135" y="212" width="179.6" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="216" width="469.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="220" width="569.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="224" width="635.2" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="774.2" y="224.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">94.8%</text>
+<line x1="135" y1="231" x2="805" y2="231" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="246.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Netherlands</text>
+<rect x="135" y="234" width="294.8" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="238" width="542.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="242" width="607.7" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="246" width="605.7" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="744.7" y="246.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">90.4%</text>
+<line x1="135" y1="253" x2="805" y2="253" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="268.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Sweden</text>
+<rect x="135" y="256" width="306.2" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="260" width="568.2" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="264" width="603.0" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="268" width="601.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="740.0" y="268.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">89.7%</text>
+<line x1="135" y1="275" x2="805" y2="275" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="290.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Germany</text>
+<rect x="135" y="278" width="202.3" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="282" width="460.3" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="286" width="549.4" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="290" width="600.3" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="739.3" y="290.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">89.6%</text>
+<line x1="135" y1="297" x2="805" y2="297" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="312.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Switzerland</text>
+<rect x="135" y="300" width="315.6" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="304" width="469.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="308" width="562.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="312" width="597.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="736.0" y="312.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">89.1%</text>
+<line x1="135" y1="319" x2="805" y2="319" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="334.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Finland</text>
+<rect x="135" y="322" width="249.2" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="326" width="499.1" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="330" width="582.2" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="334" width="587.6" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="726.6" y="334.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">87.7%</text>
+<line x1="135" y1="341" x2="805" y2="341" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="356.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Belgium</text>
+<rect x="135" y="344" width="197.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="348" width="373.9" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="352" width="502.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="356" width="579.5" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="718.5" y="356.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">86.5%</text>
+<line x1="135" y1="363" x2="805" y2="363" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="378.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Ireland</text>
+<rect x="135" y="366" width="119.9" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="370" width="278.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="374" width="467.7" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="378" width="569.5" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="708.5" y="378.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">85.0%</text>
+<line x1="135" y1="385" x2="805" y2="385" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="400.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Austria</text>
+<rect x="135" y="388" width="225.8" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="392" width="388.6" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="396" width="503.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="400" width="564.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="703.8" y="400.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">84.3%</text>
+<line x1="135" y1="407" x2="805" y2="407" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="422.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Spain</text>
+<rect x="135" y="410" width="91.1" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="414" width="320.9" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="418" width="440.9" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="422" width="540.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="679.0" y="422.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">80.6%</text>
+<line x1="135" y1="429" x2="805" y2="429" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="444.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">France</text>
+<rect x="135" y="432" width="95.8" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="436" width="287.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="440" width="517.9" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="444" width="531.3" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="670.3" y="444.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">79.3%</text>
+<line x1="135" y1="451" x2="805" y2="451" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="466.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Azerbaijan</text>
+<rect x="135" y="454" width="0.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="458" width="53.6" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="462" width="308.2" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="466" width="523.9" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="662.9" y="466.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">78.2%</text>
+<line x1="135" y1="473" x2="805" y2="473" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="488.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Malta</text>
+<rect x="135" y="476" width="87.8" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="480" width="276.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="484" width="422.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="488" width="517.9" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="656.9" y="488.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">77.3%</text>
+<line x1="135" y1="495" x2="805" y2="495" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="510.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Cyprus</text>
+<rect x="135" y="498" width="102.5" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="502" width="219.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="506" width="355.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="510" width="508.5" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="647.5" y="510.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">75.9%</text>
+<line x1="135" y1="517" x2="805" y2="517" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="532.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Kazakhstan</text>
+<rect x="135" y="520" width="4.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="524" width="20.1" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="528" width="211.7" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="532" width="499.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="638.8" y="532.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">74.6%</text>
+<line x1="135" y1="539" x2="805" y2="539" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="554.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Russia</text>
+<rect x="135" y="542" width="13.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="546" width="101.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="550" width="288.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="554" width="489.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="628.8" y="554.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">73.1%</text>
+<line x1="135" y1="561" x2="805" y2="561" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="576.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">North Macedonia</text>
+<rect x="135" y="564" width="16.8" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="568" width="176.9" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="572" width="347.7" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="576" width="483.7" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="622.7" y="576.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">72.2%</text>
+<line x1="135" y1="583" x2="805" y2="583" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="598.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Belarus</text>
+<rect x="135" y="586" width="12.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="594" width="213.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="598" width="476.4" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="615.4" y="598.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">71.1%</text>
+<line x1="135" y1="605" x2="805" y2="605" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="620.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Moldova</text>
+<rect x="135" y="608" width="8.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="612" width="97.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="616" width="216.4" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="620" width="475.7" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="614.7" y="620.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">71.0%</text>
+<line x1="135" y1="627" x2="805" y2="627" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="642.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Portugal</text>
+<rect x="135" y="630" width="109.9" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="634" width="234.5" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="638" width="357.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="642" width="471.7" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="610.7" y="642.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">70.4%</text>
+<line x1="135" y1="649" x2="805" y2="649" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="664.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Montenegro</text>
+<rect x="135" y="656" width="181.6" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="660" width="251.2" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="664" width="468.3" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="607.3" y="664.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">69.9%</text>
+<line x1="135" y1="671" x2="805" y2="671" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="686.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Greece</text>
+<rect x="135" y="674" width="61.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="678" width="160.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="682" width="297.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="686" width="463.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="602.0" y="686.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">69.1%</text>
+<line x1="135" y1="693" x2="805" y2="693" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="708.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Greenland</text>
+<rect x="135" y="696" width="212.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="700" width="386.6" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="704" width="422.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="708" width="459.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="598.0" y="708.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">68.5%</text>
+<line x1="135" y1="715" x2="805" y2="715" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="730.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Serbia</text>
+<rect x="135" y="722" width="176.2" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="726" width="274.0" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="730" width="449.6" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="588.6" y="730.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">67.1%</text>
+<line x1="135" y1="737" x2="805" y2="737" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="752.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Albania</text>
+<rect x="135" y="740" width="0.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="744" width="40.2" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="748" width="301.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="752" width="444.9" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="583.9" y="752.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">66.4%</text>
+<line x1="135" y1="759" x2="805" y2="759" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="774.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Armenia</text>
+<rect x="135" y="762" width="8.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="766" width="35.5" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="770" width="167.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="774" width="430.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="569.8" y="774.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">64.3%</text>
+<line x1="135" y1="781" x2="805" y2="781" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="796.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Italy</text>
+<rect x="135" y="784" width="154.8" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="788" width="234.5" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="792" width="359.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="796" width="410.7" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="549.7" y="796.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">61.3%</text>
+<line x1="135" y1="803" x2="805" y2="803" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="818.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Bosnia and Herzegovina</text>
+<rect x="135" y="806" width="7.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="810" width="142.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="814" width="286.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="818" width="404.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="543.0" y="818.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">60.3%</text>
+<line x1="135" y1="825" x2="805" y2="825" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="840.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Georgia</text>
+<rect x="135" y="828" width="3.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="832" width="40.9" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="836" width="180.2" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="840" width="397.3" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="536.3" y="840.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">59.3%</text>
+<line x1="135" y1="847" x2="805" y2="847" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="862.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Turkey</text>
+<rect x="135" y="850" width="25.5" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="854" width="103.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="858" width="266.7" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="862" width="390.6" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="529.6" y="862.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">58.3%</text>
+<line x1="135" y1="869" x2="805" y2="869" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="884.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Ukraine</text>
+<rect x="135" y="872" width="4.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="876" width="24.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="880" width="156.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="884" width="355.1" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="494.1" y="884.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">53.0%</text>
+<line x1="135" y1="891" x2="805" y2="891" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="906.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">San Marino</text>
+<rect x="135" y="894" width="327.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="898" width="337.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<line x1="135" y1="913" x2="805" y2="913" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="928.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Uzbekistan</text>
+<rect x="135" y="916" width="3.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="920" width="22.1" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="924" width="106.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="928" width="313.6" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="452.6" y="928.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">46.8%</text>
+<line x1="135" y1="935" x2="805" y2="935" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="950.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Kyrgyzstan</text>
+<rect x="135" y="938" width="6.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="942" width="70.3" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="946" width="109.2" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="950" width="231.1" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="370.1" y="950.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">34.5%</text>
+<line x1="135" y1="957" x2="805" y2="957" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="972.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Tajikistan</text>
+<rect x="135" y="960" width="0.5" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="964" width="2.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="968" width="77.7" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="972" width="137.3" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="276.4" y="972.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">20.5%</text>
+<line x1="135" y1="979" x2="805" y2="979" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="994.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Turkmenistan</text>
+<rect x="135" y="982" width="0.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="986" width="6.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="990" width="20.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="994" width="120.6" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="259.6" y="994.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">18.0%</text>
+<line x1="135" y1="1001" x2="805" y2="1001" stroke="#161616" stroke-width="0.5"/>
+</svg></div>
+</div>
+
+<div class="region-section" id="rs_Latin_America_and_Caribbean">
+  <div class="rs-header">
+    <div class="rs-title" style="color:#ffb74d">Latin America & Caribbean</div>
+    <div class="rs-meta">17 countries &nbsp;·&nbsp; Regional average 2016: <span style="color:#ffb74d;font-weight:600">57.4%</span></div>
+  </div>
+  <div class="rs-chart"><svg viewBox="0 0 860 438" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+<line x1="135.0" y1="26" x2="135.0" y2="418" stroke="#1a1a1a" stroke-width="1"/>
+<text x="135.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">0%</text>
+<line x1="302.5" y1="26" x2="302.5" y2="418" stroke="#1a1a1a" stroke-width="1"/>
+<text x="302.5" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">25%</text>
+<line x1="470.0" y1="26" x2="470.0" y2="418" stroke="#1a1a1a" stroke-width="1"/>
+<text x="470.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">50%</text>
+<line x1="637.5" y1="26" x2="637.5" y2="418" stroke="#1a1a1a" stroke-width="1"/>
+<text x="637.5" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">75%</text>
+<line x1="805.0" y1="26" x2="805.0" y2="418" stroke="#1a1a1a" stroke-width="1"/>
+<text x="805.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">100%</text>
+<line x1="519.6" y1="26" x2="519.6" y2="418" stroke="#ffb74d" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+<text x="522.6" y="22" font-size="7.5" fill="#ffb74d" font-family="IBM Plex Mono,monospace" font-weight="600">57.4% regional avg</text>
+<text x="129" y="48.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Chile</text>
+<rect x="135" y="36" width="111.2" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="40" width="209.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="44" width="301.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="48" width="560.1" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="699.1" y="48.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">83.6%</text>
+<line x1="135" y1="55" x2="805" y2="55" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="70.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Argentina</text>
+<rect x="135" y="58" width="46.9" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="62" width="118.6" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="66" width="301.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="70" width="475.7" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="614.7" y="70.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">71.0%</text>
+<line x1="135" y1="77" x2="805" y2="77" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="92.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Uruguay</text>
+<rect x="135" y="80" width="70.3" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="84" width="134.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="88" width="310.9" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="92" width="444.9" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="583.9" y="92.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">66.4%</text>
+<line x1="135" y1="99" x2="805" y2="99" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="114.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Costa Rica</text>
+<rect x="135" y="102" width="38.9" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="106" width="148.1" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="110" width="244.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="114" width="442.2" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="581.2" y="114.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">66.0%</text>
+<line x1="135" y1="121" x2="805" y2="121" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="136.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Brazil</text>
+<rect x="135" y="124" width="19.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="128" width="140.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="132" width="272.0" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="136" width="408.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="547.0" y="136.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">60.9%</text>
+<line x1="135" y1="143" x2="805" y2="143" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="158.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Venezuela</text>
+<rect x="135" y="146" width="22.8" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="150" width="84.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="154" width="250.6" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="158" width="402.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="541.0" y="158.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">60.0%</text>
+<line x1="135" y1="165" x2="805" y2="165" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="180.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Mexico</text>
+<rect x="135" y="168" width="34.2" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="172" width="115.2" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="176" width="208.4" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="180" width="398.6" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="537.6" y="180.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">59.5%</text>
+<line x1="135" y1="187" x2="805" y2="187" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="202.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Colombia</text>
+<rect x="135" y="190" width="14.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="194" width="73.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="198" width="244.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="202" width="389.3" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="528.3" y="202.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">58.1%</text>
+<line x1="135" y1="209" x2="805" y2="209" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="224.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Ecuador</text>
+<rect x="135" y="212" width="10.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="216" width="40.2" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="220" width="194.3" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="224" width="362.5" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="501.5" y="224.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">54.1%</text>
+<line x1="135" y1="231" x2="805" y2="231" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="246.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Panama</text>
+<rect x="135" y="234" width="44.2" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="238" width="77.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="242" width="268.7" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="246" width="361.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="500.8" y="246.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">54.0%</text>
+<line x1="135" y1="253" x2="805" y2="253" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="268.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Paraguay</text>
+<rect x="135" y="256" width="4.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="260" width="52.9" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="264" width="132.7" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="268" width="357.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="496.8" y="268.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">53.4%</text>
+<line x1="135" y1="275" x2="805" y2="275" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="290.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Peru</text>
+<rect x="135" y="278" width="20.8" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="282" width="114.6" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="286" width="233.2" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="290" width="304.9" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="443.9" y="290.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">45.5%</text>
+<line x1="135" y1="297" x2="805" y2="297" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="312.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Bolivia</text>
+<rect x="135" y="300" width="9.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="304" width="34.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="308" width="150.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="312" width="266.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="405.0" y="312.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">39.7%</text>
+<line x1="135" y1="319" x2="805" y2="319" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="334.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Guatemala</text>
+<rect x="135" y="322" width="4.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="326" width="38.2" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="330" width="70.3" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="334" width="231.1" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="370.1" y="334.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">34.5%</text>
+<line x1="135" y1="341" x2="805" y2="341" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="356.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Honduras</text>
+<rect x="135" y="344" width="8.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="348" width="43.6" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="352" width="74.4" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="356" width="201.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="340.0" y="356.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">30.0%</text>
+<line x1="135" y1="363" x2="805" y2="363" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="378.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">El Salvador</text>
+<rect x="135" y="366" width="8.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="370" width="28.1" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="374" width="106.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="378" width="194.3" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="333.3" y="378.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">29.0%</text>
+<line x1="135" y1="385" x2="805" y2="385" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="400.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Nicaragua</text>
+<rect x="135" y="388" width="6.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="392" width="17.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="396" width="67.0" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="400" width="164.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="303.8" y="400.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">24.6%</text>
+<line x1="135" y1="407" x2="805" y2="407" stroke="#161616" stroke-width="0.5"/>
+</svg></div>
+</div>
+
+<div class="region-section" id="rs_Middle_East_and_North_Africa">
+  <div class="rs-header">
+    <div class="rs-title" style="color:#f48fb1">Middle East & North Africa</div>
+    <div class="rs-meta">2 countries &nbsp;·&nbsp; Regional average 2016: <span style="color:#f48fb1;font-weight:600">48.3%</span></div>
+  </div>
+  <div class="rs-chart"><svg viewBox="0 0 860 108" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+<line x1="135.0" y1="26" x2="135.0" y2="88" stroke="#1a1a1a" stroke-width="1"/>
+<text x="135.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">0%</text>
+<line x1="302.5" y1="26" x2="302.5" y2="88" stroke="#1a1a1a" stroke-width="1"/>
+<text x="302.5" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">25%</text>
+<line x1="470.0" y1="26" x2="470.0" y2="88" stroke="#1a1a1a" stroke-width="1"/>
+<text x="470.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">50%</text>
+<line x1="637.5" y1="26" x2="637.5" y2="88" stroke="#1a1a1a" stroke-width="1"/>
+<text x="637.5" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">75%</text>
+<line x1="805.0" y1="26" x2="805.0" y2="88" stroke="#1a1a1a" stroke-width="1"/>
+<text x="805.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">100%</text>
+<line x1="458.6" y1="26" x2="458.6" y2="88" stroke="#f48fb1" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+<text x="461.6" y="22" font-size="7.5" fill="#f48fb1" font-family="IBM Plex Mono,monospace" font-weight="600">48.3% regional avg</text>
+<text x="129" y="48.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Israel</text>
+<rect x="135" y="36" width="140.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="40" width="168.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="44" width="452.3" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="48" width="534.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="673.0" y="48.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">79.7%</text>
+<line x1="135" y1="55" x2="805" y2="55" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="70.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Iran</text>
+<rect x="135" y="58" width="6.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="62" width="54.3" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="66" width="106.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="70" width="356.4" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="495.4" y="70.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">53.2%</text>
+<line x1="135" y1="77" x2="805" y2="77" stroke="#161616" stroke-width="0.5"/>
+</svg></div>
+</div>
+
+<div class="region-section" id="rs_Pacific_island_small_states">
+  <div class="rs-header">
+    <div class="rs-title" style="color:#80cbc4">Pacific island small states</div>
+    <div class="rs-meta">10 countries &nbsp;·&nbsp; Regional average 2016: <span style="color:#80cbc4;font-weight:600">30.6%</span></div>
+  </div>
+  <div class="rs-chart"><svg viewBox="0 0 860 284" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+<line x1="135.0" y1="26" x2="135.0" y2="264" stroke="#1a1a1a" stroke-width="1"/>
+<text x="135.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">0%</text>
+<line x1="302.5" y1="26" x2="302.5" y2="264" stroke="#1a1a1a" stroke-width="1"/>
+<text x="302.5" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">25%</text>
+<line x1="470.0" y1="26" x2="470.0" y2="264" stroke="#1a1a1a" stroke-width="1"/>
+<text x="470.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">50%</text>
+<line x1="637.5" y1="26" x2="637.5" y2="264" stroke="#1a1a1a" stroke-width="1"/>
+<text x="637.5" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">75%</text>
+<line x1="805.0" y1="26" x2="805.0" y2="264" stroke="#1a1a1a" stroke-width="1"/>
+<text x="805.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">100%</text>
+<line x1="340.0" y1="26" x2="340.0" y2="264" stroke="#80cbc4" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+<text x="343.0" y="22" font-size="7.5" fill="#80cbc4" font-family="IBM Plex Mono,monospace" font-weight="600">30.6% regional avg</text>
+<text x="129" y="48.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Fiji</text>
+<rect x="135" y="36" width="10.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="40" width="57.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="44" width="134.0" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="48" width="311.6" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="450.6" y="48.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">46.5%</text>
+<line x1="135" y1="55" x2="805" y2="55" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="70.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Tuvalu</text>
+<rect x="135" y="58" width="34.8" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="66" width="167.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="70" width="308.2" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="447.2" y="70.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">46.0%</text>
+<line x1="135" y1="77" x2="805" y2="77" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="92.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Tonga</text>
+<rect x="135" y="80" width="16.1" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="84" width="32.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="88" width="107.2" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="92" width="268.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="407.0" y="92.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">40.0%</text>
+<line x1="135" y1="99" x2="805" y2="99" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="114.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Micronesia (country)</text>
+<rect x="135" y="102" width="24.8" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="106" width="79.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="110" width="134.0" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="114" width="223.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="362.8" y="114.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">33.4%</text>
+<line x1="135" y1="121" x2="805" y2="121" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="136.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Marshall Islands</text>
+<rect x="135" y="124" width="10.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="128" width="26.1" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="132" width="46.9" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="136" width="199.7" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="338.7" y="136.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">29.8%</text>
+<line x1="135" y1="143" x2="805" y2="143" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="158.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Samoa</text>
+<rect x="135" y="146" width="4.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="150" width="22.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="154" width="46.9" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="158" width="197.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="336.0" y="158.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">29.4%</text>
+<line x1="135" y1="165" x2="805" y2="165" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="180.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Vanuatu</text>
+<rect x="135" y="168" width="14.1" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="172" width="34.2" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="176" width="53.6" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="180" width="160.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="299.8" y="180.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">24.0%</text>
+<line x1="135" y1="187" x2="805" y2="187" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="202.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Kiribati</text>
+<rect x="135" y="190" width="12.1" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="194" width="26.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="198" width="61.0" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="202" width="91.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="230.8" y="202.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">13.7%</text>
+<line x1="135" y1="209" x2="805" y2="209" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="224.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Solomon Islands</text>
+<rect x="135" y="212" width="3.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="216" width="5.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="220" width="33.5" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="224" width="73.7" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="212.7" y="224.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">11.0%</text>
+<line x1="135" y1="231" x2="805" y2="231" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="246.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Papua New Guinea</text>
+<rect x="135" y="234" width="5.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="238" width="11.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="242" width="8.7" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="246" width="64.3" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="203.3" y="246.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">9.6%</text>
+<line x1="135" y1="253" x2="805" y2="253" stroke="#161616" stroke-width="0.5"/>
+</svg></div>
+</div>
+
+<div class="region-section" id="rs_South_Asia">
+  <div class="rs-header">
+    <div class="rs-title" style="color:#a5d6a7">South Asia</div>
+    <div class="rs-meta">7 countries &nbsp;·&nbsp; Regional average 2016: <span style="color:#a5d6a7;font-weight:600">26.5%</span></div>
+  </div>
+  <div class="rs-chart"><svg viewBox="0 0 860 218" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+<line x1="135.0" y1="26" x2="135.0" y2="198" stroke="#1a1a1a" stroke-width="1"/>
+<text x="135.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">0%</text>
+<line x1="302.5" y1="26" x2="302.5" y2="198" stroke="#1a1a1a" stroke-width="1"/>
+<text x="302.5" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">25%</text>
+<line x1="470.0" y1="26" x2="470.0" y2="198" stroke="#1a1a1a" stroke-width="1"/>
+<text x="470.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">50%</text>
+<line x1="637.5" y1="26" x2="637.5" y2="198" stroke="#1a1a1a" stroke-width="1"/>
+<text x="637.5" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">75%</text>
+<line x1="805.0" y1="26" x2="805.0" y2="198" stroke="#1a1a1a" stroke-width="1"/>
+<text x="805.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">100%</text>
+<line x1="312.6" y1="26" x2="312.6" y2="198" stroke="#a5d6a7" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+<text x="315.6" y="22" font-size="7.5" fill="#a5d6a7" font-family="IBM Plex Mono,monospace" font-weight="600">26.5% regional avg</text>
+<text x="129" y="48.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Bhutan</text>
+<rect x="135" y="36" width="2.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="40" width="25.5" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="44" width="91.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="48" width="280.1" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="419.1" y="48.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">41.8%</text>
+<line x1="135" y1="55" x2="805" y2="55" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="70.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Sri Lanka</text>
+<rect x="135" y="58" width="4.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="62" width="12.1" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="66" width="80.4" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="70" width="215.1" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="354.1" y="70.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">32.1%</text>
+<line x1="135" y1="77" x2="805" y2="77" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="92.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">India</text>
+<rect x="135" y="80" width="3.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="84" width="16.1" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="88" width="50.2" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="92" width="197.6" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="336.6" y="92.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">29.5%</text>
+<line x1="135" y1="99" x2="805" y2="99" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="114.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Nepal</text>
+<rect x="135" y="102" width="1.3" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="106" width="5.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="110" width="52.9" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="114" width="132.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="271.0" y="114.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">19.7%</text>
+<line x1="135" y1="121" x2="805" y2="121" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="136.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Bangladesh</text>
+<rect x="135" y="124" width="0.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="128" width="1.3" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="132" width="24.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="136" width="121.9" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="260.9" y="136.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">18.2%</text>
+<line x1="135" y1="143" x2="805" y2="143" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="158.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Pakistan</text>
+<rect x="135" y="150" width="42.2" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="154" width="53.6" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="158" width="103.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="242.8" y="158.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">15.5%</text>
+<line x1="135" y1="165" x2="805" y2="165" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="180.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Afghanistan</text>
+<rect x="135" y="172" width="8.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="176" width="26.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="180" width="71.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="210.0" y="180.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">10.6%</text>
+<line x1="135" y1="187" x2="805" y2="187" stroke="#161616" stroke-width="0.5"/>
+</svg></div>
+</div>
+
+<div class="region-section" id="rs_Sub-Saharan_Africa">
+  <div class="rs-header">
+    <div class="rs-title" style="color:#e8604c">Sub-Saharan Africa</div>
+    <div class="rs-meta">43 countries &nbsp;·&nbsp; Regional average 2016: <span style="color:#e8604c;font-weight:600">19.9%</span></div>
+  </div>
+  <div class="rs-chart"><svg viewBox="0 0 860 1010" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+<line x1="135.0" y1="26" x2="135.0" y2="990" stroke="#1a1a1a" stroke-width="1"/>
+<text x="135.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">0%</text>
+<line x1="302.5" y1="26" x2="302.5" y2="990" stroke="#1a1a1a" stroke-width="1"/>
+<text x="302.5" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">25%</text>
+<line x1="470.0" y1="26" x2="470.0" y2="990" stroke="#1a1a1a" stroke-width="1"/>
+<text x="470.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">50%</text>
+<line x1="637.5" y1="26" x2="637.5" y2="990" stroke="#1a1a1a" stroke-width="1"/>
+<text x="637.5" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">75%</text>
+<line x1="805.0" y1="26" x2="805.0" y2="990" stroke="#1a1a1a" stroke-width="1"/>
+<text x="805.0" y="22" text-anchor="middle" font-size="8" fill="#444" font-family="IBM Plex Mono,monospace">100%</text>
+<line x1="268.3" y1="26" x2="268.3" y2="990" stroke="#e8604c" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+<text x="271.3" y="22" font-size="7.5" fill="#e8604c" font-family="IBM Plex Mono,monospace" font-weight="600">19.9% regional avg</text>
+<text x="129" y="48.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Seychelles</text>
+<rect x="135" y="36" width="49.6" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="40" width="170.2" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="44" width="274.7" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="48" width="378.5" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="517.5" y="48.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">56.5%</text>
+<line x1="135" y1="55" x2="805" y2="55" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="70.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">South Africa</text>
+<rect x="135" y="58" width="35.5" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="62" width="50.2" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="66" width="160.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="70" width="361.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="500.8" y="70.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">54.0%</text>
+<line x1="135" y1="77" x2="805" y2="77" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="92.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Mauritius</text>
+<rect x="135" y="80" width="48.9" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="84" width="101.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="88" width="189.6" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="92" width="349.7" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="488.7" y="92.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">52.2%</text>
+<line x1="135" y1="99" x2="805" y2="99" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="114.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Gabon</text>
+<rect x="135" y="102" width="8.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="106" width="32.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="110" width="87.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="114" width="322.3" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="461.3" y="114.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">48.1%</text>
+<line x1="135" y1="121" x2="805" y2="121" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="136.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Cote d'Ivoire</text>
+<rect x="135" y="124" width="1.3" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="128" width="6.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="132" width="18.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="136" width="276.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="415.0" y="136.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">41.2%</text>
+<line x1="135" y1="143" x2="805" y2="143" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="158.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Botswana</text>
+<rect x="135" y="146" width="19.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="150" width="22.1" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="154" width="40.2" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="158" width="264.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="403.0" y="158.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">39.4%</text>
+<line x1="135" y1="165" x2="805" y2="165" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="180.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Ghana</text>
+<rect x="135" y="168" width="1.3" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="172" width="12.1" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="176" width="52.3" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="180" width="232.5" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="371.5" y="180.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">34.7%</text>
+<line x1="135" y1="187" x2="805" y2="187" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="202.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Namibia</text>
+<rect x="135" y="190" width="10.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="194" width="26.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="198" width="77.7" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="202" width="207.7" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="346.7" y="202.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">31.0%</text>
+<line x1="135" y1="209" x2="805" y2="209" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="224.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Eswatini</text>
+<rect x="135" y="212" width="6.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="216" width="24.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="220" width="73.7" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="224" width="191.6" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="330.6" y="224.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">28.6%</text>
+<line x1="135" y1="231" x2="805" y2="231" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="246.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Sao Tome and Principe</text>
+<rect x="135" y="234" width="30.8" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="238" width="92.5" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="242" width="126.0" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="246" width="187.6" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="326.6" y="246.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">28.0%</text>
+<line x1="135" y1="253" x2="805" y2="253" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="268.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Lesotho</text>
+<rect x="135" y="256" width="1.3" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="260" width="17.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="264" width="26.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="268" width="183.6" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="322.6" y="268.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">27.4%</text>
+<line x1="135" y1="275" x2="805" y2="275" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="290.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Nigeria</text>
+<rect x="135" y="278" width="0.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="282" width="23.5" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="286" width="77.0" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="290" width="172.2" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="311.2" y="290.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">25.7%</text>
+<line x1="135" y1="297" x2="805" y2="297" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="312.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Senegal</text>
+<rect x="135" y="300" width="2.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="304" width="32.2" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="308" width="53.6" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="312" width="172.2" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="311.2" y="312.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">25.7%</text>
+<line x1="135" y1="319" x2="805" y2="319" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="334.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Zambia</text>
+<rect x="135" y="322" width="1.3" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="326" width="19.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="330" width="67.0" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="334" width="170.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="309.9" y="334.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">25.5%</text>
+<line x1="135" y1="341" x2="805" y2="341" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="356.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Cameroon</text>
+<rect x="135" y="344" width="2.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="348" width="9.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="352" width="28.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="356" width="167.5" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="306.5" y="356.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">25.0%</text>
+<line x1="135" y1="363" x2="805" y2="363" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="378.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Equatorial Guinea</text>
+<rect x="135" y="366" width="0.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="370" width="7.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="374" width="40.2" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="378" width="159.5" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="298.5" y="378.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">23.8%</text>
+<line x1="135" y1="385" x2="805" y2="385" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="400.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Zimbabwe</text>
+<rect x="135" y="388" width="2.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="392" width="16.1" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="396" width="42.9" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="400" width="154.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="293.8" y="400.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">23.1%</text>
+<line x1="135" y1="407" x2="805" y2="407" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="422.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Uganda</text>
+<rect x="135" y="410" width="1.3" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="414" width="11.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="418" width="83.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="422" width="146.7" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="285.7" y="422.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">21.9%</text>
+<line x1="135" y1="429" x2="805" y2="429" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="444.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Rwanda</text>
+<rect x="135" y="432" width="0.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="436" width="4.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="440" width="53.6" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="444" width="134.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="273.0" y="444.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">20.0%</text>
+<line x1="135" y1="451" x2="805" y2="451" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="466.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Gambia</text>
+<rect x="135" y="454" width="6.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="458" width="25.5" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="462" width="61.6" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="466" width="124.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="262.9" y="466.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">18.5%</text>
+<line x1="135" y1="473" x2="805" y2="473" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="488.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Mozambique</text>
+<rect x="135" y="476" width="0.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="480" width="6.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="484" width="28.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="488" width="117.2" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="256.2" y="488.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">17.5%</text>
+<line x1="135" y1="495" x2="805" y2="495" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="510.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Kenya</text>
+<rect x="135" y="498" width="2.0" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="502" width="20.8" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="506" width="48.2" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="510" width="111.2" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="250.2" y="510.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">16.6%</text>
+<line x1="135" y1="517" x2="805" y2="517" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="532.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Ethiopia</text>
+<rect x="135" y="520" width="0.5" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="524" width="1.3" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="528" width="5.4" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="532" width="103.2" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="242.2" y="532.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">15.4%</text>
+<line x1="135" y1="539" x2="805" y2="539" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="554.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Burkina Faso</text>
+<rect x="135" y="542" width="0.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="546" width="3.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="550" width="16.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="554" width="93.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="232.8" y="554.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">14.0%</text>
+<line x1="135" y1="561" x2="805" y2="561" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="576.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Angola</text>
+<rect x="135" y="564" width="0.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="568" width="7.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="572" width="18.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="576" width="87.1" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="226.1" y="576.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">13.0%</text>
+<line x1="135" y1="583" x2="805" y2="583" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="598.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Tanzania</text>
+<rect x="135" y="586" width="0.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="590" width="7.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="594" width="19.4" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="598" width="87.1" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="226.1" y="598.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">13.0%</text>
+<line x1="135" y1="605" x2="805" y2="605" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="620.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Benin</text>
+<rect x="135" y="608" width="1.3" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="612" width="8.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="616" width="20.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="620" width="80.4" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="219.4" y="620.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">12.0%</text>
+<line x1="135" y1="627" x2="805" y2="627" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="642.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Sierra Leone</text>
+<rect x="135" y="630" width="0.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="634" width="1.3" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="638" width="4.0" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="642" width="79.1" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="218.1" y="642.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">11.8%</text>
+<line x1="135" y1="649" x2="805" y2="649" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="664.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Malawi</text>
+<rect x="135" y="652" width="0.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="656" width="2.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="660" width="15.4" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="664" width="77.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="216.1" y="664.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">11.5%</text>
+<line x1="135" y1="671" x2="805" y2="671" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="686.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Togo</text>
+<rect x="135" y="674" width="5.4" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="678" width="12.1" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="682" width="20.1" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="686" width="75.7" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="214.7" y="686.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">11.3%</text>
+<line x1="135" y1="693" x2="805" y2="693" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="708.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Mali</text>
+<rect x="135" y="696" width="0.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="700" width="3.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="704" width="13.4" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="708" width="74.4" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="213.4" y="708.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">11.1%</text>
+<line x1="135" y1="715" x2="805" y2="715" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="730.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Guinea</text>
+<rect x="135" y="718" width="0.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="722" width="3.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="726" width="6.7" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="730" width="65.7" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="204.7" y="730.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">9.8%</text>
+<line x1="135" y1="737" x2="805" y2="737" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="752.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Liberia</text>
+<rect x="135" y="740" width="0.5" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="748" width="15.4" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="752" width="48.9" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="187.9" y="752.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">7.3%</text>
+<line x1="135" y1="759" x2="805" y2="759" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="774.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">South Sudan</text>
+<rect x="135" y="774" width="44.9" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="183.9" y="774.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">6.7%</text>
+<line x1="135" y1="781" x2="805" y2="781" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="796.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Democratic Republic of Congo</text>
+<rect x="135" y="784" width="0.5" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="788" width="1.3" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="792" width="4.7" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="796" width="41.5" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="180.5" y="796.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">6.2%</text>
+<line x1="135" y1="803" x2="805" y2="803" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="818.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Burundi</text>
+<rect x="135" y="806" width="0.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="810" width="3.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="814" width="6.7" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="818" width="34.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="173.8" y="818.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">5.2%</text>
+<line x1="135" y1="825" x2="805" y2="825" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="840.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Chad</text>
+<rect x="135" y="828" width="0.5" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="832" width="2.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="836" width="11.4" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="840" width="33.5" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="172.5" y="840.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">5.0%</text>
+<line x1="135" y1="847" x2="805" y2="847" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="862.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Madagascar</text>
+<rect x="135" y="850" width="1.3" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="854" width="4.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="858" width="11.4" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="862" width="31.5" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="170.5" y="862.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">4.7%</text>
+<line x1="135" y1="869" x2="805" y2="869" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="884.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Niger</text>
+<rect x="135" y="872" width="0.5" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="876" width="1.3" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="880" width="5.4" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="884" width="28.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="167.8" y="884.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">4.3%</text>
+<line x1="135" y1="891" x2="805" y2="891" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="906.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Central African Republic</text>
+<rect x="135" y="894" width="0.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="898" width="2.0" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="902" width="13.4" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="906" width="26.8" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="165.8" y="906.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">4.0%</text>
+<line x1="135" y1="913" x2="805" y2="913" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="928.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Guinea-Bissau</text>
+<rect x="135" y="916" width="1.3" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="920" width="12.7" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="924" width="16.8" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="928" width="25.5" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="164.5" y="928.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">3.8%</text>
+<line x1="135" y1="935" x2="805" y2="935" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="950.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Somalia</text>
+<rect x="135" y="938" width="0.5" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="942" width="7.4" height="3" fill="#4a4a4a" opacity="0.4" rx="1"/>
+<rect x="135" y="950" width="12.7" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="151.7" y="950.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">1.9%</text>
+<line x1="135" y1="957" x2="805" y2="957" stroke="#161616" stroke-width="0.5"/>
+<text x="129" y="972.0" text-anchor="end" font-size="8.5" fill="#bbb" font-family="IBM Plex Sans,sans-serif">Eritrea</text>
+<rect x="135" y="960" width="0.7" height="3" fill="#333" opacity="0.4" rx="1"/>
+<rect x="135" y="968" width="4.0" height="3" fill="#777" opacity="0.4" rx="1"/>
+<rect x="135" y="972" width="8.0" height="3" fill="#e0e0e0" opacity="1.0" rx="1"/>
+<text x="147.0" y="972.0" font-size="7.5" fill="#666" font-family="IBM Plex Mono,monospace">1.2%</text>
+<line x1="135" y1="979" x2="805" y2="979" stroke="#161616" stroke-width="0.5"/>
+</svg></div>
+</div>
+</div>
+
+<div class="source">Internet usage (% of population) · 189 countries · 10 world regions from dataset · 2000–2016 · Our World in Data / World Bank</div>
+
+<div id="tooltip"></div>
+
+<script>
+const DATA = {"Arab World": {"countries": [{"country": "Algeria", "data": {"2000": 0.5, "2005": 5.8, "2010": 12.5, "2016": 42.9}}, {"country": "Bahrain", "data": {"2000": 6.2, "2005": 21.3, "2010": 55.0, "2016": 98.0}}, {"country": "Comoros", "data": {"2000": 0.3, "2005": 2.0, "2010": 5.1, "2016": 7.9}}, {"country": "Djibouti", "data": {"2000": 0.2, "2005": 1.0, "2010": 6.5, "2016": 13.1}}, {"country": "Egypt", "data": {"2000": 0.6, "2005": 12.8, "2010": 21.6, "2016": 41.2}}, {"country": "Iraq", "data": {"2005": 0.9, "2010": 2.5, "2016": 21.2}}, {"country": "Jordan", "data": {"2000": 2.6, "2005": 12.9, "2010": 27.2, "2016": 62.3}}, {"country": "Kuwait", "data": {"2000": 6.7, "2005": 25.9, "2010": 61.4, "2016": 78.4}}, {"country": "Lebanon", "data": {"2000": 8.0, "2005": 10.1, "2010": 43.7, "2016": 76.1}}, {"country": "Libya", "data": {"2000": 0.2, "2005": 3.9, "2010": 14.0, "2016": 20.3}}, {"country": "Mauritania", "data": {"2000": 0.2, "2005": 0.7, "2010": 4.0, "2016": 18.0}}, {"country": "Morocco", "data": {"2000": 0.7, "2005": 15.1, "2010": 52.0, "2016": 58.3}}, {"country": "Oman", "data": {"2000": 3.5, "2005": 6.7, "2010": 35.8, "2016": 76.8}}, {"country": "Palestine", "data": {"2000": 1.1, "2005": 16.0, "2010": 37.4, "2016": 61.2}}, {"country": "Qatar", "data": {"2000": 4.9, "2005": 24.7, "2010": 69.0, "2016": 94.3}}, {"country": "Saudi Arabia", "data": {"2000": 2.2, "2005": 12.7, "2010": 41.0, "2016": 74.9}}, {"country": "Sudan", "data": {"2000": 0.0, "2005": 1.3, "2010": 16.7, "2016": 28.0}}, {"country": "Tunisia", "data": {"2000": 2.8, "2005": 9.7, "2010": 36.8, "2016": 49.6}}, {"country": "United Arab Emirates", "data": {"2000": 23.6, "2005": 40.0, "2010": 68.0, "2016": 90.6}}, {"country": "Yemen", "data": {"2000": 0.1, "2005": 1.0, "2010": 12.3, "2016": 24.6}}], "aggregate": {"2000": 1.2, "2005": 8.6, "2010": 24.8, "2016": 42.7}, "count": 20}, "Caribbean small states": {"countries": [{"country": "Antigua and Barbuda", "data": {"2000": 6.5, "2005": 27.0, "2010": 47.0, "2016": 73.0}}, {"country": "Bahamas", "data": {"2000": 8.0, "2005": 25.0, "2010": 43.0, "2016": 80.0}}, {"country": "Barbados", "data": {"2000": 4.0, "2005": 52.5, "2010": 65.1, "2016": 79.5}}, {"country": "Belize", "data": {"2000": 6.0, "2005": 17.0, "2010": 28.2, "2016": 44.6}}, {"country": "Cuba", "data": {"2000": 0.5, "2005": 9.7, "2010": 15.9, "2016": 43.0}}, {"country": "Dominica", "data": {"2000": 8.8, "2005": 38.5, "2010": 47.5, "2016": 67.0}}, {"country": "Dominican Republic", "data": {"2000": 3.7, "2005": 11.5, "2010": 31.4, "2016": 63.9}}, {"country": "Grenada", "data": {"2000": 4.1, "2005": 20.5, "2010": 27.0, "2016": 55.9}}, {"country": "Guyana", "data": {"2000": 6.6, "2010": 29.9, "2016": 35.7}}, {"country": "Haiti", "data": {"2000": 0.2, "2005": 6.4, "2010": 8.4, "2016": 12.2}}, {"country": "Jamaica", "data": {"2000": 3.1, "2005": 12.8, "2010": 27.7, "2016": 44.4}}, {"country": "Saint Kitts and Nevis", "data": {"2000": 5.9, "2005": 34.0, "2010": 63.0, "2016": 76.8}}, {"country": "Saint Lucia", "data": {"2000": 5.1, "2005": 21.6, "2010": 32.5, "2016": 46.7}}, {"country": "Saint Vincent and the Grenadines", "data": {"2000": 3.2, "2005": 9.2, "2010": 33.7, "2016": 55.6}}, {"country": "Suriname", "data": {"2000": 2.5, "2005": 6.4, "2010": 31.6, "2016": 45.4}}, {"country": "Trinidad and Tobago", "data": {"2000": 7.7, "2005": 29.0, "2010": 48.5, "2016": 73.3}}], "aggregate": {"2000": 4.9, "2005": 19.4, "2010": 35.4, "2016": 53.6}, "count": 16}, "Central Europe and the Baltics": {"countries": [{"country": "Bulgaria", "data": {"2000": 5.4, "2005": 20.0, "2010": 46.2, "2016": 59.8}}, {"country": "Croatia", "data": {"2000": 6.6, "2005": 33.1, "2010": 56.5, "2016": 72.7}}, {"country": "Czechia", "data": {"2000": 9.8, "2005": 35.3, "2010": 68.8, "2016": 76.5}}, {"country": "Estonia", "data": {"2000": 28.6, "2005": 61.5, "2010": 74.1, "2016": 87.2}}, {"country": "Hungary", "data": {"2000": 7.0, "2005": 39.0, "2010": 65.0, "2016": 79.3}}, {"country": "Latvia", "data": {"2000": 6.3, "2005": 46.0, "2010": 68.4, "2016": 79.8}}, {"country": "Lithuania", "data": {"2000": 6.4, "2005": 36.2, "2010": 62.1, "2016": 74.4}}, {"country": "Poland", "data": {"2000": 7.3, "2005": 38.8, "2010": 62.3, "2016": 73.3}}, {"country": "Romania", "data": {"2000": 3.6, "2005": 21.5, "2010": 39.9, "2016": 59.5}}, {"country": "Slovakia", "data": {"2000": 9.4, "2005": 55.2, "2010": 75.7, "2016": 80.5}}, {"country": "Slovenia", "data": {"2000": 15.1, "2005": 46.8, "2010": 70.0, "2016": 75.5}}], "aggregate": {"2000": 7.1, "2005": 34.7, "2010": 58.6, "2016": 71.4}, "count": 11}, "East Asia & Pacific": {"countries": [{"country": "Australia", "data": {"2000": 46.8, "2005": 63.0, "2010": 76.0, "2016": 88.2}}, {"country": "Brunei", "data": {"2000": 9.0, "2005": 36.5, "2010": 53.0, "2016": 90.0}}, {"country": "Cambodia", "data": {"2000": 0.0, "2005": 0.3, "2010": 1.3, "2016": 32.4}}, {"country": "China", "data": {"2000": 1.8, "2005": 8.5, "2010": 34.3, "2016": 53.2}}, {"country": "Indonesia", "data": {"2000": 0.9, "2005": 3.6, "2010": 10.9, "2016": 25.4}}, {"country": "Japan", "data": {"2000": 30.0, "2005": 66.9, "2010": 78.2, "2016": 93.2}}, {"country": "Laos", "data": {"2000": 0.1, "2005": 0.9, "2010": 7.0, "2016": 21.9}}, {"country": "Malaysia", "data": {"2000": 21.4, "2005": 48.6, "2010": 56.3, "2016": 78.8}}, {"country": "Maldives", "data": {"2000": 2.2, "2005": 6.9, "2010": 26.5, "2016": 59.1}}, {"country": "Mongolia", "data": {"2000": 1.3, "2010": 10.2, "2016": 22.3}}, {"country": "Myanmar", "data": {"2005": 0.1, "2010": 0.2, "2016": 25.1}}, {"country": "New Zealand", "data": {"2000": 47.4, "2005": 62.7, "2010": 80.5, "2016": 88.5}}, {"country": "North Korea", "data": {"2000": 0.0, "2005": 0.0, "2010": 0.0}}, {"country": "Philippines", "data": {"2000": 2.0, "2005": 5.4, "2010": 25.0, "2016": 55.5}}, {"country": "Singapore", "data": {"2000": 36.0, "2005": 61.0, "2010": 71.0, "2016": 84.5}}, {"country": "South Korea", "data": {"2000": 44.7, "2005": 73.5, "2010": 83.7, "2016": 92.8}}, {"country": "Thailand", "data": {"2000": 3.7, "2005": 15.0, "2010": 22.4, "2016": 47.5}}, {"country": "Timor", "data": {"2005": 0.1, "2010": 3.0, "2016": 25.2}}, {"country": "Vietnam", "data": {"2000": 0.3, "2005": 12.7, "2010": 30.6, "2016": 46.5}}], "aggregate": {"2000": 5.6, "2005": 14.7, "2010": 34.3, "2016": 52.9}, "count": 19}, "Europe & Central Asia": {"countries": [{"country": "Albania", "data": {"2000": 0.1, "2005": 6.0, "2010": 45.0, "2016": 66.4}}, {"country": "Andorra", "data": {"2000": 10.5, "2005": 37.6, "2010": 81.0, "2016": 97.9}}, {"country": "Armenia", "data": {"2000": 1.3, "2005": 5.3, "2010": 25.0, "2016": 64.3}}, {"country": "Austria", "data": {"2000": 33.7, "2005": 58.0, "2010": 75.2, "2016": 84.3}}, {"country": "Azerbaijan", "data": {"2000": 0.1, "2005": 8.0, "2010": 46.0, "2016": 78.2}}, {"country": "Belarus", "data": {"2000": 1.9, "2010": 31.8, "2016": 71.1}}, {"country": "Belgium", "data": {"2000": 29.4, "2005": 55.8, "2010": 75.0, "2016": 86.5}}, {"country": "Bosnia and Herzegovina", "data": {"2000": 1.1, "2005": 21.3, "2010": 42.8, "2016": 60.3}}, {"country": "Cyprus", "data": {"2000": 15.3, "2005": 32.8, "2010": 53.0, "2016": 75.9}}, {"country": "Denmark", "data": {"2000": 39.2, "2005": 82.7, "2010": 88.7, "2016": 97.0}}, {"country": "Faeroe Islands", "data": {"2000": 32.9, "2005": 67.9, "2010": 75.2, "2016": 95.1}}, {"country": "Finland", "data": {"2000": 37.2, "2005": 74.5, "2010": 86.9, "2016": 87.7}}, {"country": "France", "data": {"2000": 14.3, "2005": 42.9, "2010": 77.3, "2016": 79.3}}, {"country": "Georgia", "data": {"2000": 0.5, "2005": 6.1, "2010": 26.9, "2016": 59.3}}, {"country": "Germany", "data": {"2000": 30.2, "2005": 68.7, "2010": 82.0, "2016": 89.6}}, {"country": "Greece", "data": {"2000": 9.1, "2005": 24.0, "2010": 44.4, "2016": 69.1}}, {"country": "Greenland", "data": {"2000": 31.7, "2005": 57.7, "2010": 63.0, "2016": 68.5}}, {"country": "Iceland", "data": {"2000": 44.5, "2005": 87.0, "2010": 93.4, "2016": 98.2}}, {"country": "Ireland", "data": {"2000": 17.9, "2005": 41.6, "2010": 69.8, "2016": 85.0}}, {"country": "Italy", "data": {"2000": 23.1, "2005": 35.0, "2010": 53.7, "2016": 61.3}}, {"country": "Kazakhstan", "data": {"2000": 0.7, "2005": 3.0, "2010": 31.6, "2016": 74.6}}, {"country": "Kyrgyzstan", "data": {"2000": 1.0, "2005": 10.5, "2010": 16.3, "2016": 34.5}}, {"country": "Liechtenstein", "data": {"2000": 36.5, "2005": 63.4, "2010": 80.0, "2016": 98.1}}, {"country": "Luxembourg", "data": {"2000": 22.9, "2005": 70.0, "2010": 90.6, "2016": 98.1}}, {"country": "Malta", "data": {"2000": 13.1, "2005": 41.2, "2010": 63.0, "2016": 77.3}}, {"country": "Moldova", "data": {"2000": 1.3, "2005": 14.6, "2010": 32.3, "2016": 71.0}}, {"country": "Monaco", "data": {"2000": 42.2, "2005": 55.5, "2010": 75.0, "2016": 95.2}}, {"country": "Montenegro", "data": {"2005": 27.1, "2010": 37.5, "2016": 69.9}}, {"country": "Netherlands", "data": {"2000": 44.0, "2005": 81.0, "2010": 90.7, "2016": 90.4}}, {"country": "North Macedonia", "data": {"2000": 2.5, "2005": 26.4, "2010": 51.9, "2016": 72.2}}, {"country": "Norway", "data": {"2000": 52.0, "2005": 82.0, "2010": 93.4, "2016": 97.3}}, {"country": "Portugal", "data": {"2000": 16.4, "2005": 35.0, "2010": 53.3, "2016": 70.4}}, {"country": "Russia", "data": {"2000": 2.0, "2005": 15.2, "2010": 43.0, "2016": 73.1}}, {"country": "San Marino", "data": {"2000": 48.8, "2005": 50.3}}, {"country": "Serbia", "data": {"2005": 26.3, "2010": 40.9, "2016": 67.1}}, {"country": "Spain", "data": {"2000": 13.6, "2005": 47.9, "2010": 65.8, "2016": 80.6}}, {"country": "Sweden", "data": {"2000": 45.7, "2005": 84.8, "2010": 90.0, "2016": 89.7}}, {"country": "Switzerland", "data": {"2000": 47.1, "2005": 70.1, "2010": 83.9, "2016": 89.1}}, {"country": "Tajikistan", "data": {"2000": 0.0, "2005": 0.3, "2010": 11.6, "2016": 20.5}}, {"country": "Turkey", "data": {"2000": 3.8, "2005": 15.5, "2010": 39.8, "2016": 58.3}}, {"country": "Turkmenistan", "data": {"2000": 0.1, "2005": 1.0, "2010": 3.0, "2016": 18.0}}, {"country": "Ukraine", "data": {"2000": 0.7, "2005": 3.7, "2010": 23.3, "2016": 53.0}}, {"country": "United Kingdom", "data": {"2000": 26.8, "2005": 70.0, "2010": 85.0, "2016": 94.8}}, {"country": "Uzbekistan", "data": {"2000": 0.5, "2005": 3.3, "2010": 15.9, "2016": 46.8}}], "aggregate": {"2000": 13.2, "2005": 35.1, "2010": 56.1, "2016": 72.9}, "count": 44}, "Latin America & Caribbean": {"countries": [{"country": "Argentina", "data": {"2000": 7.0, "2005": 17.7, "2010": 45.0, "2016": 71.0}}, {"country": "Bolivia", "data": {"2000": 1.4, "2005": 5.2, "2010": 22.4, "2016": 39.7}}, {"country": "Brazil", "data": {"2000": 2.9, "2005": 21.0, "2010": 40.6, "2016": 60.9}}, {"country": "Chile", "data": {"2000": 16.6, "2005": 31.2, "2010": 45.0, "2016": 83.6}}, {"country": "Colombia", "data": {"2000": 2.2, "2005": 11.0, "2010": 36.5, "2016": 58.1}}, {"country": "Costa Rica", "data": {"2000": 5.8, "2005": 22.1, "2010": 36.5, "2016": 66.0}}, {"country": "Ecuador", "data": {"2000": 1.5, "2005": 6.0, "2010": 29.0, "2016": 54.1}}, {"country": "El Salvador", "data": {"2000": 1.2, "2005": 4.2, "2010": 15.9, "2016": 29.0}}, {"country": "Guatemala", "data": {"2000": 0.7, "2005": 5.7, "2010": 10.5, "2016": 34.5}}, {"country": "Honduras", "data": {"2000": 1.2, "2005": 6.5, "2010": 11.1, "2016": 30.0}}, {"country": "Mexico", "data": {"2000": 5.1, "2005": 17.2, "2010": 31.1, "2016": 59.5}}, {"country": "Nicaragua", "data": {"2000": 1.0, "2005": 2.6, "2010": 10.0, "2016": 24.6}}, {"country": "Panama", "data": {"2000": 6.6, "2005": 11.5, "2010": 40.1, "2016": 54.0}}, {"country": "Paraguay", "data": {"2000": 0.7, "2005": 7.9, "2010": 19.8, "2016": 53.4}}, {"country": "Peru", "data": {"2000": 3.1, "2005": 17.1, "2010": 34.8, "2016": 45.5}}, {"country": "Uruguay", "data": {"2000": 10.5, "2005": 20.1, "2010": 46.4, "2016": 66.4}}, {"country": "Venezuela", "data": {"2000": 3.4, "2005": 12.6, "2010": 37.4, "2016": 60.0}}], "aggregate": {"2000": 3.9, "2005": 16.6, "2010": 34.7, "2016": 57.4}, "count": 17}, "Middle East & North Africa": {"countries": [{"country": "Iran", "data": {"2000": 0.9, "2005": 8.1, "2010": 15.9, "2016": 53.2}}, {"country": "Israel", "data": {"2000": 20.9, "2005": 25.2, "2010": 67.5, "2016": 79.7}}], "aggregate": {"2000": 1.7, "2005": 9.8, "2010": 24.9, "2016": 48.3}, "count": 2}, "Pacific island small states": {"countries": [{"country": "Fiji", "data": {"2000": 1.5, "2005": 8.5, "2010": 20.0, "2016": 46.5}}, {"country": "Kiribati", "data": {"2000": 1.8, "2005": 4.0, "2010": 9.1, "2016": 13.7}}, {"country": "Marshall Islands", "data": {"2000": 1.5, "2005": 3.9, "2010": 7.0, "2016": 29.8}}, {"country": "Micronesia (country)", "data": {"2000": 3.7, "2005": 11.9, "2010": 20.0, "2016": 33.4}}, {"country": "Papua New Guinea", "data": {"2000": 0.8, "2005": 1.7, "2010": 1.3, "2016": 9.6}}, {"country": "Samoa", "data": {"2000": 0.6, "2005": 3.4, "2010": 7.0, "2016": 29.4}}, {"country": "Solomon Islands", "data": {"2000": 0.5, "2005": 0.8, "2010": 5.0, "2016": 11.0}}, {"country": "Tonga", "data": {"2000": 2.4, "2005": 4.9, "2010": 16.0, "2016": 40.0}}, {"country": "Tuvalu", "data": {"2000": 5.2, "2010": 25.0, "2016": 46.0}}, {"country": "Vanuatu", "data": {"2000": 2.1, "2005": 5.1, "2010": 8.0, "2016": 24.0}}], "aggregate": {"2000": 1.5, "2005": 5.6, "2010": 13.0, "2016": 30.6}, "count": 10}, "South Asia": {"countries": [{"country": "Afghanistan", "data": {"2005": 1.2, "2010": 4.0, "2016": 10.6}}, {"country": "Bangladesh", "data": {"2000": 0.1, "2005": 0.2, "2010": 3.7, "2016": 18.2}}, {"country": "Bhutan", "data": {"2000": 0.4, "2005": 3.8, "2010": 13.6, "2016": 41.8}}, {"country": "India", "data": {"2000": 0.5, "2005": 2.4, "2010": 7.5, "2016": 29.5}}, {"country": "Nepal", "data": {"2000": 0.2, "2005": 0.8, "2010": 7.9, "2016": 19.7}}, {"country": "Pakistan", "data": {"2005": 6.3, "2010": 8.0, "2016": 15.5}}, {"country": "Sri Lanka", "data": {"2000": 0.6, "2005": 1.8, "2010": 12.0, "2016": 32.1}}], "aggregate": {"2000": 0.5, "2005": 2.5, "2010": 7.2, "2016": 26.5}, "count": 7}, "Sub-Saharan Africa": {"countries": [{"country": "Angola", "data": {"2000": 0.1, "2005": 1.1, "2010": 2.8, "2016": 13.0}}, {"country": "Benin", "data": {"2000": 0.2, "2005": 1.3, "2010": 3.1, "2016": 12.0}}, {"country": "Botswana", "data": {"2000": 2.9, "2005": 3.3, "2010": 6.0, "2016": 39.4}}, {"country": "Burkina Faso", "data": {"2000": 0.1, "2005": 0.5, "2010": 2.4, "2016": 14.0}}, {"country": "Burundi", "data": {"2000": 0.1, "2005": 0.5, "2010": 1.0, "2016": 5.2}}, {"country": "Cameroon", "data": {"2000": 0.3, "2005": 1.4, "2010": 4.3, "2016": 25.0}}, {"country": "Central African Republic", "data": {"2000": 0.1, "2005": 0.3, "2010": 2.0, "2016": 4.0}}, {"country": "Chad", "data": {"2000": 0.0, "2005": 0.4, "2010": 1.7, "2016": 5.0}}, {"country": "Cote d'Ivoire", "data": {"2000": 0.2, "2005": 1.0, "2010": 2.7, "2016": 41.2}}, {"country": "Democratic Republic of Congo", "data": {"2000": 0.0, "2005": 0.2, "2010": 0.7, "2016": 6.2}}, {"country": "Equatorial Guinea", "data": {"2000": 0.1, "2005": 1.1, "2010": 6.0, "2016": 23.8}}, {"country": "Eritrea", "data": {"2000": 0.1, "2010": 0.6, "2016": 1.2}}, {"country": "Eswatini", "data": {"2000": 0.9, "2005": 3.7, "2010": 11.0, "2016": 28.6}}, {"country": "Ethiopia", "data": {"2000": 0.0, "2005": 0.2, "2010": 0.8, "2016": 15.4}}, {"country": "Gabon", "data": {"2000": 1.2, "2005": 4.9, "2010": 13.0, "2016": 48.1}}, {"country": "Gambia", "data": {"2000": 0.9, "2005": 3.8, "2010": 9.2, "2016": 18.5}}, {"country": "Ghana", "data": {"2000": 0.2, "2005": 1.8, "2010": 7.8, "2016": 34.7}}, {"country": "Guinea", "data": {"2000": 0.1, "2005": 0.5, "2010": 1.0, "2016": 9.8}}, {"country": "Guinea-Bissau", "data": {"2000": 0.2, "2005": 1.9, "2010": 2.5, "2016": 3.8}}, {"country": "Kenya", "data": {"2000": 0.3, "2005": 3.1, "2010": 7.2, "2016": 16.6}}, {"country": "Lesotho", "data": {"2000": 0.2, "2005": 2.6, "2010": 3.9, "2016": 27.4}}, {"country": "Liberia", "data": {"2000": 0.0, "2010": 2.3, "2016": 7.3}}, {"country": "Madagascar", "data": {"2000": 0.2, "2005": 0.6, "2010": 1.7, "2016": 4.7}}, {"country": "Malawi", "data": {"2000": 0.1, "2005": 0.4, "2010": 2.3, "2016": 11.5}}, {"country": "Mali", "data": {"2000": 0.1, "2005": 0.5, "2010": 2.0, "2016": 11.1}}, {"country": "Mauritius", "data": {"2000": 7.3, "2005": 15.2, "2010": 28.3, "2016": 52.2}}, {"country": "Mozambique", "data": {"2000": 0.1, "2005": 0.9, "2010": 4.2, "2016": 17.5}}, {"country": "Namibia", "data": {"2000": 1.6, "2005": 4.0, "2010": 11.6, "2016": 31.0}}, {"country": "Niger", "data": {"2000": 0.0, "2005": 0.2, "2010": 0.8, "2016": 4.3}}, {"country": "Nigeria", "data": {"2000": 0.1, "2005": 3.5, "2010": 11.5, "2016": 25.7}}, {"country": "Rwanda", "data": {"2000": 0.1, "2005": 0.6, "2010": 8.0, "2016": 20.0}}, {"country": "Sao Tome and Principe", "data": {"2000": 4.6, "2005": 13.8, "2010": 18.8, "2016": 28.0}}, {"country": "Senegal", "data": {"2000": 0.4, "2005": 4.8, "2010": 8.0, "2016": 25.7}}, {"country": "Seychelles", "data": {"2000": 7.4, "2005": 25.4, "2010": 41.0, "2016": 56.5}}, {"country": "Sierra Leone", "data": {"2000": 0.1, "2005": 0.2, "2010": 0.6, "2016": 11.8}}, {"country": "Somalia", "data": {"2000": 0.0, "2005": 1.1, "2016": 1.9}}, {"country": "South Africa", "data": {"2000": 5.3, "2005": 7.5, "2010": 24.0, "2016": 54.0}}, {"country": "South Sudan", "data": {"2016": 6.7}}, {"country": "Tanzania", "data": {"2000": 0.1, "2005": 1.1, "2010": 2.9, "2016": 13.0}}, {"country": "Togo", "data": {"2000": 0.8, "2005": 1.8, "2010": 3.0, "2016": 11.3}}, {"country": "Uganda", "data": {"2000": 0.2, "2005": 1.7, "2010": 12.5, "2016": 21.9}}, {"country": "Zambia", "data": {"2000": 0.2, "2005": 2.9, "2010": 10.0, "2016": 25.5}}, {"country": "Zimbabwe", "data": {"2000": 0.4, "2005": 2.4, "2010": 6.4, "2016": 23.1}}], "aggregate": {"2000": 0.5, "2005": 2.0, "2010": 7.0, "2016": 19.9}, "count": 43}};
+const RC = {"Arab World":"#f0a500","Caribbean small states":"#ce93d8","Central Europe and the Baltics":"#4fc3f7","East Asia & Pacific":"#81c784","Europe & Central Asia":"#64b5f6","Latin America & Caribbean":"#ffb74d","Middle East & North Africa":"#f48fb1","Pacific island small states":"#80cbc4","South Asia":"#a5d6a7","Sub-Saharan Africa":"#e8604c"};
+const REGIONS = ["Arab World","Caribbean small states","Central Europe and the Baltics","East Asia & Pacific","Europe & Central Asia","Latin America & Caribbean","Middle East & North Africa","Pacific island small states","South Asia","Sub-Saharan Africa"];
+const SHOW_YEARS = ["2000","2005","2010","2016"];
+const YEAR_COLORS = {"2000":"#333","2005":"#4a4a4a","2010":"#777","2016":"#e0e0e0"};
+
+// Build nav pills
+const navEl = document.getElementById("navPills");
+REGIONS.forEach(r => {
+  const a = document.createElement("a");
+  a.className = "nav-pill";
+  a.textContent = r;
+  a.style.borderColor = RC[r] + "33";
+  a.style.color = RC[r] + "99";
+  a.href = "#rs_" + r.replace(/ /g,"_").replace(/&/g,"and").replace(/\./g,"").replace(/,/g,"");
+  navEl.appendChild(a);
+});
+
+// Tooltip
+const tt = document.getElementById("tooltip");
+function showTip(e, country, region, yearData) {
+  const color = RC[region] || "#aaa";
+  const rows = SHOW_YEARS.map(y => yearData[y] !== undefined
+    ? "<div class=\"tt-year-row\">" + y + ": <span>" + yearData[y] + "%</span></div>"
+    : "").join("");
+  tt.style.display = "block";
+  tt.innerHTML = "<div class=\"tt-country\" style=\"color:" + color + "\">" + country + "</div><div class=\"tt-region\">" + region + "</div><div class=\"tt-years\">" + rows + "</div>";
+  moveTip(e);
+}
+function moveTip(e){ tt.style.left=(e.clientX+14)+"px"; tt.style.top=(e.clientY-50)+"px"; }
+function hideTip(){ tt.style.display="none"; }
+
+// Attach hover events to SVG rects
+document.querySelectorAll(".rs-chart svg").forEach(svg => {
+  const regEl = svg.closest(".region-section");
+  const regTitle = regEl.querySelector(".rs-title").textContent.trim();
+  const regData = DATA[regTitle];
+  if (!regData) return;
+  
+  // Build lookup: country name -> data
+  const lookup = {};
+  regData.countries.forEach(c => { lookup[c.country] = c.data; });
+
+  // Each country has GROUP_H rows - we attach events to rect elements
+  svg.querySelectorAll("rect").forEach(rect => {
+    // Find which country this rect belongs to by its y position
+    rect.style.cursor = "pointer";
+    rect.addEventListener("mouseenter", function(e) {
+      // Find country text at similar y
+      const ry = parseFloat(rect.getAttribute("y"));
+      let closest = null, minDist = 999;
+      svg.querySelectorAll("text").forEach(t => {
+        const ty = parseFloat(t.getAttribute("y"));
+        const dist = Math.abs(ty - ry - 5);
+        if (dist < minDist && t.getAttribute("text-anchor") === "end") {
+          minDist = dist; closest = t;
+        }
+      });
+      if (closest && minDist < 20) {
+        const country = closest.textContent;
+        if (lookup[country]) showTip(e, country, regTitle, lookup[country]);
+      }
+    });
+    rect.addEventListener("mousemove", moveTip);
+    rect.addEventListener("mouseleave", hideTip);
+  });
+});
+
+// Year highlight toggle
+function highlightYear(btn) {
+  document.querySelectorAll(".ybtn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  const yr = btn.dataset.year;
+  document.querySelectorAll(".rs-chart svg rect").forEach(rect => {
+    const fill = rect.getAttribute("fill");
+    const op = rect.getAttribute("opacity");
+    if (yr === "all") {
+      rect.style.opacity = "";
+    } else {
+      // Determine year from fill color
+      const yearFromColor = {"#333":"2000","#4a4a4a":"2005","#777":"2010","#e0e0e0":"2016"};
+      const rectYear = yearFromColor[fill] || yearFromColor[rect.getAttribute("fill")];
+      rect.style.opacity = rectYear === yr ? "1" : "0.1";
+    }
+  });
+}
+
+// Search
+const searchInput = document.getElementById("searchInput");
+const searchResults = document.getElementById("searchResults");
+
+// Build flat country list
+const allCountries = [];
+REGIONS.forEach(r => {
+  if (DATA[r]) DATA[r].countries.forEach(c => allCountries.push({country: c.country, region: r, data: c.data}));
+});
+
+searchInput.addEventListener("input", () => {
+  const q = searchInput.value.toLowerCase().trim();
+  // Remove previous highlight
+  document.querySelectorAll(".searched-label").forEach(el => {
+    el.style.fill = "#bbb";
+    el.classList.remove("searched-label");
+  });
+  if (!q) { searchResults.classList.remove("open"); searchResults.innerHTML = ""; return; }
+  
+  const matches = allCountries.filter(c => c.country.toLowerCase().includes(q)).slice(0, 12);
+  searchResults.innerHTML = matches.map(c =>
+    "<div class=\"search-result-item\" data-country=\"" + c.country + "\" data-region=\"" + c.region + "\">" +
+    "<div>" + c.country + "</div><div class=\"sr-region\">" + c.region + "</div></div>"
+  ).join("");
+  searchResults.classList.add("open");
+  
+  searchResults.querySelectorAll(".search-result-item").forEach(item => {
+    item.addEventListener("click", () => {
+      const country = item.dataset.country;
+      const region = item.dataset.region;
+      searchInput.value = country;
+      searchResults.classList.remove("open");
+      
+      // Scroll to region
+      const regId = "rs_" + region.replace(/ /g,"_").replace(/&/g,"and").replace(/\./g,"").replace(/,/g,"");
+      const regEl = document.getElementById(regId);
+      if (regEl) {
+        regEl.scrollIntoView({behavior:"smooth", block:"start"});
+        
+        // Highlight country label in SVG
+        setTimeout(() => {
+          regEl.querySelectorAll("text").forEach(t => {
+            if (t.getAttribute("text-anchor") === "end" && t.textContent === country) {
+              t.style.fill = "#ffe066";
+              t.style.fontSize = "9.5px";
+              t.classList.add("searched-label");
+            }
+          });
+        }, 600);
+      }
+    });
+  });
+});
+
+document.addEventListener("click", e => {
+  if (!e.target.closest(".search-wrap")) searchResults.classList.remove("open");
+});
+</script>
+</body>
+</html>
